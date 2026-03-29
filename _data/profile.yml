@@ -1,6 +1,6 @@
-primary_name: "Muhammad Raza"
+primary_name: "Syed Muhammad Raza"
 secondary_name: ""
-navbar_name: "Muhammad Raza"
+navbar_name: "Syed Muhammad Raza"
 
 positions:
   - name: "R&D AI Robotic Engineer"
@@ -19,7 +19,7 @@ short_bio: >-
   point cloud processing, edge deployment, and robotics perception pipelines.
 
 portrait_url: "/assets/images/photos/RAZA.jpeg"
-portrait_caption: "Portfolio photo"
+portrait_caption: "Syed Muhammad Raza"
 
 education:
   - name: "Kumoh National Institute of Technology"
@@ -31,7 +31,7 @@ education:
     position: "Bachelors in Computer Science"
     date: "Aug 2018 - Sep 2022"
 
-publications:
+awards:
   - name: "Neurocomputing paper accepted"
     date: "2025"
   - name: "IEEE Access paper accepted"

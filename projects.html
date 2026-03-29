@@ -1,0 +1,24 @@
+---
+layout: default
+title: Projects
+navbar_title: Projects
+---
+
+<div class="row">
+  <div class="col-12">
+    <h2>Projects</h2>
+    <p>Selected research and engineering projects.</p>
+  </div>
+</div>
+
+{% assign grouped_projects = site.showcase | where: "show", true | sort: "date" | reverse %}
+{% for item in grouped_projects %}
+  <div class="card mt-3">
+    <div class="card-body">
+      <h4 class="card-title">{{ item.title }}</h4>
+      <div class="card-text">
+        {{ item.content }}
+      </div>
+    </div>
+  </div>
+{% endfor %}
