@@ -23,6 +23,63 @@
       </div>
     {% endif %}
 
+    <hr>
+
+    <div class="mb-2">
+      <a href="mailto:{{ site.data.profile.email | replace: '@', '(at)' }}">
+        <i class="fas fa-at"></i> {{ site.data.profile.email | replace: '@', '(at)' }}
+      </a>
+    </div>
+
+    <div>
+      {% if site.data.profile.github %}
+        <a class="me-3" href="https://github.com/{{ site.data.profile.github }}" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+      {% endif %}
+
+      {% if site.data.profile.linkedin %}
+        <a href="https://www.linkedin.com/in/{{ site.data.profile.linkedin }}/" target="_blank">
+          <i class="fab fa-linkedin"></i> LinkedIn
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- <div class="card shadow-sm border-0 rounded-4">
+  <div class="card-body text-center p-4">
+    <img
+      src="{{ site.data.profile.portrait_url | relative_url }}"
+      alt="{{ site.data.profile.primary_name }}"
+      class="img-fluid rounded mb-3"
+      style="max-width: 220px; height: auto;"
+    >
+
+    <h2 style="font-size: 1.35rem; line-height: 1.15; margin-bottom: 0.75rem;">
+      {{ site.data.profile.primary_name }}
+    </h2>
+
+    {% if site.data.profile.secondary_name and site.data.profile.secondary_name != "" %}
+      <div class="text-muted mb-2">{{ site.data.profile.secondary_name }}</div>
+    {% endif %}
+
+    {% if site.data.profile.positions %}
+      <div class="mb-3">
+        {% for pos in site.data.profile.positions %}
+          <div>{{ pos.name }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     {% if site.data.profile.short_bio %}
       <p class="text-start mb-3">{{ site.data.profile.short_bio }}</p>
     {% endif %}
@@ -57,4 +114,4 @@
       {% endif %}
     </div>
   </div>
-</div>
+</div> -->
