@@ -1,9 +1,8 @@
 ---
 title: "Motion Categorization using Generative AI Models"
 date: 2025-03-01
-group: "Projects"
+group: "Research Projects"
 show: true
-width: 12
 ---
 
 Developed a real-time 2D motion categorization framework for sports applications, focusing on dynamic trajectory understanding and prediction.

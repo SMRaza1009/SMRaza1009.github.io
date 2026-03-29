@@ -8,14 +8,14 @@
                         <!-- When the screen is wider than md, float the portrait on the right -->
                         <div class="figure d-none d-md-block">
                             <img 
-                                src="{{ site.data.profile.portrait_url | relative_url }}" 
+                                src="{{ site.data.profile.portrait_url | relative_url }}" style="width: 100%; max-width: 220px; height: auto; object-fit: cover;" 
                                 class="figure-img img-fluid" 
                                 data-toggle="tooltip" 
                                 data-placement="top" 
                                 title="{{ site.data.profile.portrait_caption }}">
                         </div>
                         <div class="mb-3 d-md-none text-center">
-                            <img src="{{ site.data.profile.portrait_url | relative_url }}" class="rounded-circle" style="max-width: 50%;" alt="Portrait">
+                            <img src="{{ site.data.profile.portrait_url | relative_url }}" style="width: 100%; max-width: 220px; height: auto; object-fit: cover;" class="rounded-circle" style="max-width: 50%;" alt="Portrait">
                         </div>
                         {% endif %}
                     </div>

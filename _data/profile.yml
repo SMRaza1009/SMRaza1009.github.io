@@ -3,20 +3,20 @@ secondary_name: ""
 navbar_name: "Syed Muhammad Raza"
 
 positions:
-  - name: "R&D AI Robotic Engineer"
-  - name: "Neubility Inc., Seoul, South Korea"
+  - name: "R&D AI Engineer @ Neubility"
+  - name: "3D/4D Perception | Multimodal MLLMs, VLM, VLA (Physical AI) | Edge AI | Autonomous Driving"
 
 email: "iamraza1998@gmail.com"
 github: "SMRaza1009"
-linkedin: ""
+linkedin: "smraza1009"
 cv_link: "/assets/cv/Muhammad_Raza_CV.pdf"
 
 short_bio_text_justify: false
 short_bio: >-
   I am an AI researcher and engineer working in computer vision, robotics,
-  autonomous systems, efficient AI, and multimodal learning. My work includes
-  object detection, object tracking under occlusion, 3D perception, depth estimation,
-  point cloud processing, edge deployment, and robotics perception pipelines.
+  autonomous systems, efficient AI, and multimodal learning. At Neubility,
+  I am focusing on 3D/4D perception, multimodal MLLMs, VLM, VLA (Physical AI),
+  edge AI, and autonomous driving.
 
 portrait_url: "/assets/images/photos/RAZA.jpeg"
 portrait_caption: "Syed Muhammad Raza"

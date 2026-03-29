@@ -1,9 +1,8 @@
 ---
 title: "3D Pose Estimation and Avatar Generation"
 date: 2025-02-01
-group: "Projects"
+group: "Research Projects"
 show: true
-width: 12
 ---
 
 Developed a 3D human pose estimation pipeline for avatar generation using monocular RGB input.

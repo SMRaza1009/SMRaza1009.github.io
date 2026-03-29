@@ -1,39 +1,31 @@
 ---
 layout: default
-title : Homepage
+title: Homepage
 navbar_title: Home
+container_class: container-xl
 ---
 
 <div class="row">
-    <div class="col-lg-3 col-md-4">
-        {% include widgets/profile_card_mini.html %}
-    </div>
-    <div class="col-lg-9 col-md-8">
+  <div class="col-12 col-lg-4">
+    {% include widgets/profile_card.html %}
+  </div>
+  <div class="col-12 col-lg-8">
+    {% include widgets/profile_card_bio_only.html %}
 
-        {% include widgets/profile_card_bio_only.html %}
+    {% if site.data.display.homepage.show_experience %}
+      {% include widgets/experience_card.html %}
+    {% endif %}
 
-        <!-- Debugging widgets -->
-        {% include widgets/debug_repo_name.html %}
-        {% include widgets/debug_url.html %}
-
-        {% if site.data.display.homepage.show_experience %}
-            {% include widgets/experience_card.html %}
-        {% endif %}
-
-        {% if site.data.display.homepage.show_news %}
-        {% assign count_news = site.news | size %}
-        {% if count_news > 0 %}
+    {% if site.data.display.homepage.show_news %}
+      {% assign count_news = site.news | size %}
+      {% if count_news > 0 %}
         {% include widgets/news_card.html limit=site.data.display.homepage.num_news %}
-        {% endif %}
-        {% endif %}
+      {% endif %}
+    {% endif %}
 
-        {% if site.data.display.homepage.show_selected_publications %}
-        {% assign pubs = site.publications | sort: "date" | reverse | where: "selected", true %}
-        {%
-        include widgets/publication_card.html
-        publications=pubs
-        title='<i class="fas fa-star"></i> Selected Publications'
-        %}
-        {% endif %}
-    </div>
+    {% if site.data.display.homepage.show_selected_publications %}
+      {% assign pubs = site.publications | sort: "date" | reverse | where: "selected", true | slice: 0, 3 %}
+      {% include widgets/publication_card.html publications=pubs title='Selected Publications' %}
+    {% endif %}
+  </div>
 </div>

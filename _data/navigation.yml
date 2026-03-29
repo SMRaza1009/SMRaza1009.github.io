@@ -1,8 +1,7 @@
-- title: Home
-  url: /
-
-- title: Publications
-  url: /publications.html
-
-- title: Projects
-  url: /projects.html
+pages:
+  - name: Home
+    url: /
+  - name: Publications
+    url: /publications.html
+  - name: Research Projects
+    url: /research-projects.html

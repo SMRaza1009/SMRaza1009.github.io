@@ -1,14 +1,29 @@
-{% assign publications = include.publications %}
-<div class="my-3 p-0 bg-white shadow-sm rounded-xl">
-    <h6 class="border-bottom border-gray p-3 mb-0">
-        {% if include.title %}{{ include.title }}{% else %}<i class="fas fa-star"></i> Selected Recent Publications{% endif %} 
-        <a href="{{ 'publications' | relative_url }}">(view all <i class="fas fa-angle-double-right"></i>)</a>
-    </h6>
-    {% for item in publications limit:include.limit %}
-        {% include widgets/publication_item.html item=item first=false last=false %}    
+<div class="card mt-3">
+  <div class="card-header">
+    <strong>{{ include.title | default: "Selected Publications" }}</strong>
+    <a class="float-end" href="{{ '/publications.html' | relative_url }}">(view all <i class="fas fa-angle-double-right"></i>)</a>
+  </div>
+  <div class="card-body p-0">
+    {% for pub in include.publications %}
+    <div class="border-top p-3">
+      <div class="row align-items-center">
+        <div class="col-md-2 col-3 text-center">
+          {% if pub.image and pub.image != "" %}
+          <div style="height:84px; display:flex; align-items:center; justify-content:center; background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:6px;">
+            <img src="{{ pub.image | relative_url }}" alt="{{ pub.title }}" style="max-height:72px; max-width:100%; object-fit:contain;">
+          </div>
+          {% endif %}
+        </div>
+        <div class="col-md-10 col-9">
+          <h5 class="mb-1">{{ pub.title }}</h5>
+          <div class="small">{{ pub.authors | join: ", " }}</div>
+          <div class="small text-muted">{{ pub.venue }} — {{ pub.status }} — {{ pub.authorship }}</div>
+          {% if pub.paper_pdf and pub.paper_pdf != "" %}
+          <div class="small mt-1"><a href="{{ pub.paper_pdf | relative_url }}">[PDF]</a></div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
     {% endfor %}
-    <h6 class="d-block p-3 mt-0 text-right">
-        <a href="{{ 'publications' | relative_url }}">All publications <i class="fas fa-angle-double-right"></i></a>
-    </h6>
+  </div>
 </div>
-

@@ -1,9 +1,8 @@
 ---
 title: "Large-Scale 2D Auto-Labeling and Keyframe Selection for Robotics Datasets"
 date: 2025-10-01
-group: "Projects"
+group: "Research Projects"
 show: true
-width: 12
 ---
 
 Designed an end-to-end 2D auto-labeling pipeline for large-scale robotic perception datasets, enabling efficient pseudo-label generation for object detection models.

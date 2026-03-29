@@ -1,9 +1,8 @@
 ---
 title: "3D Mesh Simplification and Compression Analysis"
 date: 2025-04-01
-group: "Projects"
+group: "Research Projects"
 show: true
-width: 12
 ---
 
 Developed an automated pipeline for 3D mesh simplification and compression analysis across multiple decimation levels.
