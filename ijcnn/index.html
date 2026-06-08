@@ -3,431 +3,387 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IJCNN 2026 — VASTSum</title>
+<meta name="description" content="VASTSum: Uncertainty-Aware and Decoder-Aligned Learning for Video Summarization. IJCNN 2026.">
+<title>VASTSum — IJCNN 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;
+  --bg2:#f8f8f6;
+  --bg3:#f1f0ec;
+  --text:#1a1a1a;
+  --text2:#555550;
+  --text3:#888882;
+  --accent:#c0392b;
+  --accent2:#2c3e7a;
+  --border:#e0dfd8;
+  --serif:'Source Serif 4',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --max:860px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.65;font-size:16px}
 
-  :root {
-    --navy: #080f1e;
-    --navy-mid: #0e1c36;
-    --accent: #5aabf0;
-    --accent2: #a78bfa;
-    --gold: #f0c96a;
-    --gold-dim: rgba(240,201,106,0.13);
-    --white: #eef2ff;
-    --muted: rgba(238,242,255,0.5);
-    --border: rgba(90,171,240,0.18);
-  }
+/* ── HERO ── */
+.hero{background:var(--bg2);border-bottom:1px solid var(--border);padding:4rem 1.5rem 3rem;text-align:center}
+.conf-pill{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border);border-radius:100px;padding:4px 14px;font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.04em;margin-bottom:1.6rem}
+.conf-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+h1.title{font-family:var(--serif);font-size:clamp(1.65rem,3.5vw,2.4rem);font-weight:600;line-height:1.18;color:var(--text);max-width:720px;margin:0 auto 1.2rem}
+h1.title em{font-style:italic;color:var(--accent2)}
+.model-name{display:inline-block;font-family:var(--mono);font-size:13px;font-weight:500;background:var(--accent2);color:#fff;border-radius:5px;padding:3px 11px;margin-bottom:1.8rem;letter-spacing:.03em}
+.authors-block{font-size:15px;color:var(--text2);margin-bottom:.4rem;line-height:1.9}
+.authors-block a{color:var(--accent2);text-decoration:none;font-weight:500}
+.authors-block a:hover{text-decoration:underline}
+.affil{font-size:13px;color:var(--text3);margin-bottom:2rem}
 
-  html { scroll-behavior: smooth; }
+/* buttons */
+.btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:.5rem}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:8px;font-size:13.5px;font-weight:500;text-decoration:none;transition:all .18s ease;border:1.5px solid transparent}
+.btn-primary{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.btn-primary:hover{background:#1e2d5e;border-color:#1e2d5e}
+.btn-outline{background:#fff;color:var(--text);border-color:var(--border)}
+.btn-outline:hover{border-color:var(--accent2);color:var(--accent2)}
+.btn svg{width:15px;height:15px;flex-shrink:0}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--navy);
-    color: var(--white);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ── LAYOUT ── */
+.page{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
 
-  /* Subtle dot-grid */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: radial-gradient(rgba(90,171,240,0.08) 1px, transparent 1px);
-    background-size: 32px 32px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── SECTIONS ── */
+section{padding:3rem 0;border-bottom:1px solid var(--border)}
+section:last-child{border-bottom:none}
+h2.section-title{font-family:var(--serif);font-size:1.35rem;font-weight:600;color:var(--text);margin-bottom:1.2rem;display:flex;align-items:center;gap:10px}
+h2.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
-  /* Top glow */
-  .top-glow {
-    position: fixed;
-    top: -200px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 900px;
-    height: 500px;
-    background: radial-gradient(ellipse, rgba(90,171,240,0.1) 0%, rgba(167,139,250,0.06) 40%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-    animation: glowPulse 9s ease-in-out infinite;
-  }
+/* abstract */
+.abstract-text{font-family:var(--serif);font-size:16px;line-height:1.8;color:var(--text2);font-weight:300}
+.abstract-text strong{color:var(--text);font-weight:600}
 
-  @keyframes glowPulse {
-    0%,100% { opacity:.7; transform:translateX(-50%) scale(1); }
-    50% { opacity:1; transform:translateX(-50%) scale(1.06); }
-  }
+/* contributions */
+.contrib-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:.5rem}
+.contrib-list li{display:flex;gap:14px;align-items:flex-start}
+.contrib-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--accent2);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.contrib-list li p{font-size:15px;color:var(--text2);line-height:1.65}
+.contrib-list li p strong{color:var(--text);font-weight:600}
 
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 4rem 2rem 6rem;
-  }
+/* pipeline figure */
+.pipeline-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.5rem;text-align:center;margin-top:.5rem}
+.pipeline-wrap img{max-width:100%;border-radius:6px}
+.fig-caption{font-size:12.5px;color:var(--text3);margin-top:.9rem;line-height:1.6;text-align:left}
 
-  /* Conference badge */
-  .conf-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--gold-dim);
-    border: 1px solid rgba(240,201,106,0.3);
-    border-radius: 100px;
-    padding: 5px 15px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--gold);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 2.2rem;
-    animation: fadeUp 0.6s ease both;
-  }
+/* results tables */
+.results-tables{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:.5rem}
+@media(max-width:620px){.results-tables{grid-template-columns:1fr}}
+.tbl-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.tbl-head{padding:.75rem 1rem;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);background:var(--bg3);border-bottom:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{padding:.55rem .75rem;text-align:center;font-weight:600;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);background:var(--bg3)}
+th:first-child{text-align:left}
+td{padding:.5rem .75rem;text-align:center;border-bottom:1px solid #eeeee8;color:var(--text2)}
+td:first-child{text-align:left;font-weight:500;color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr.ours td{background:#eef2ff;font-weight:600;color:var(--accent2)}
+tr.ours td:first-child{color:var(--accent2)}
+td.best{font-weight:700;color:var(--accent)}
+.tbl-note{font-size:12px;color:var(--text3);padding:.65rem 1rem;border-top:1px solid var(--border);background:var(--bg3)}
 
-  .conf-badge .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--gold);
-    animation: blink 2.2s ease-in-out infinite;
-  }
+/* ablation */
+.ablation-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:.5rem}
+table.ablation td:first-child{font-size:13px;color:var(--text2)}
+table.ablation tr.full-model td{background:#eef2ff;font-weight:700;color:var(--accent2)}
+.section-tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 8px;margin-bottom:.35rem}
 
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+/* bibtex */
+.bibtex-box{background:#1e1e1e;border-radius:10px;padding:1.2rem 1.5rem;overflow-x:auto;margin-top:.5rem}
+.bibtex-box pre{font-family:var(--mono);font-size:13px;color:#d4d4d4;line-height:1.7;white-space:pre}
+.copy-btn{display:inline-flex;align-items:center;gap:6px;margin-top:1rem;padding:6px 14px;background:transparent;border:1px solid #444;border-radius:6px;color:#aaa;font-size:12px;cursor:pointer;transition:all .15s}
+.copy-btn:hover{border-color:#888;color:#eee}
+.copy-btn.copied{border-color:#4ade80;color:#4ade80}
 
-  /* Paper title */
-  .paper-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(1.7rem, 3.8vw, 2.5rem);
-    line-height: 1.2;
-    color: var(--white);
-    margin-bottom: 0.6rem;
-    animation: fadeUp 0.65s 0.08s ease both;
-  }
+/* footer */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center}
+footer p{font-size:12.5px;color:var(--text3);line-height:1.8}
+footer a{color:var(--accent2);text-decoration:none}
+footer a:hover{text-decoration:underline}
 
-  .paper-title em {
-    font-style: italic;
-    color: var(--accent);
-  }
+/* nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:var(--max);margin:0 auto;padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-logo{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--accent2);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color .15s}
+.nav-links a:hover{color:var(--accent2)}
+@media(max-width:500px){.nav-links{display:none}}
 
-  .model-tag {
-    display: inline-block;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    background: rgba(90,171,240,0.12);
-    border: 1px solid rgba(90,171,240,0.28);
-    color: var(--accent);
-    border-radius: 6px;
-    padding: 3px 10px;
-    margin-bottom: 2rem;
-    animation: fadeUp 0.65s 0.12s ease both;
-    letter-spacing: 0.04em;
-  }
-
-  /* Thin separator */
-  .sep {
-    width: 48px; height: 1.5px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-    border-radius: 2px;
-    margin-bottom: 1.8rem;
-    animation: fadeUp 0.65s 0.14s ease both;
-  }
-
-  /* Authors */
-  .authors {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 3rem;
-    animation: fadeUp 0.65s 0.18s ease both;
-  }
-
-  .author-chip {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    background: rgba(14,28,54,0.8);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 7px 14px 7px 7px;
-    text-decoration: none;
-    color: var(--white);
-    transition: all 0.22s ease;
-    backdrop-filter: blur(6px);
-  }
-
-  .author-chip:hover {
-    background: rgba(90,171,240,0.12);
-    border-color: rgba(90,171,240,0.45);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(90,171,240,0.18);
-  }
-
-  .author-chip.no-link { cursor: default; }
-  .author-chip.no-link:hover { transform: none; box-shadow: none; background: rgba(14,28,54,0.8); border-color: var(--border); }
-
-  .avatar {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1.5px solid rgba(90,171,240,0.5);
-    flex-shrink: 0;
-  }
-
-  .avatar-placeholder {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: rgba(90,171,240,0.15);
-    border: 1.5px solid rgba(90,171,240,0.3);
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 500; color: var(--accent);
-  }
-
-  .aname { font-size: 13px; font-weight: 500; display: block; line-height: 1.3; }
-  .aaff  { font-size: 10.5px; color: var(--muted); display: block; }
-
-  /* Section label */
-  .slabel {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    opacity: 0.75;
-    margin-bottom: 0.85rem;
-  }
-
-  /* Resource cards */
-  .cards { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 3rem; }
-
-  .card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: rgba(14,28,54,0.65);
-    border: 1px solid var(--border);
-    border-radius: 13px;
-    padding: 14px 18px;
-    text-decoration: none;
-    color: var(--white);
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), border-color 0.22s, box-shadow 0.22s;
-  }
-
-  .card::after {
-    content:'';
-    position:absolute;
-    inset:0;
-    opacity:0;
-    transition: opacity 0.25s;
-  }
-
-  .card.c-paper::after  { background: radial-gradient(circle at 5% 50%, rgba(90,171,240,0.1), transparent 55%); }
-  .card.c-raza::after   { background: radial-gradient(circle at 5% 50%, rgba(240,201,106,0.09), transparent 55%); }
-  .card.c-omer::after   { background: radial-gradient(circle at 5% 50%, rgba(167,139,250,0.09), transparent 55%); }
-
-  .card:hover::after { opacity:1; }
-  .card:hover { transform: translateX(5px); box-shadow: 0 4px 28px rgba(90,171,240,0.13); border-color: rgba(90,171,240,0.38); }
-  .card.c-raza:hover  { border-color: rgba(240,201,106,0.35); }
-  .card.c-omer:hover  { border-color: rgba(167,139,250,0.35); }
-
-  .card-icon {
-    width: 40px; height: 40px;
-    border-radius: 9px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .ci-paper { background: rgba(90,171,240,0.13); }
-  .ci-raza  { background: rgba(240,201,106,0.11); }
-  .ci-omer  { background: rgba(167,139,250,0.11); }
-
-  .card-icon svg { width: 18px; height: 18px; }
-
-  .card-body { flex:1; min-width:0; }
-  .card-title { font-size: 13.5px; font-weight: 500; margin-bottom: 1px; }
-  .card-sub   { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .card-arrow { flex-shrink:0; opacity:.3; transition: opacity .22s, transform .22s; }
-  .card:hover .card-arrow { opacity:.7; transform: translateX(3px); }
-
-  /* Abstract */
-  .abstract {
-    background: rgba(10,18,36,0.5);
-    border-left: 2.5px solid var(--accent);
-    border-radius: 0 10px 10px 0;
-    padding: 18px 22px;
-    margin-bottom: 3rem;
-    animation: fadeUp 0.65s 0.38s ease both;
-  }
-
-  .abstract p {
-    font-size: 13px;
-    line-height: 1.78;
-    color: rgba(238,242,255,0.55);
-    font-weight: 300;
-  }
-
-  /* Keywords */
-  .keywords { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 3.5rem; animation: fadeUp 0.65s 0.44s ease both; }
-  .kw {
-    font-family: 'DM Mono', monospace;
-    font-size: 10.5px;
-    padding: 4px 11px;
-    background: rgba(90,171,240,0.07);
-    border: 1px solid rgba(90,171,240,0.18);
-    border-radius: 100px;
-    color: rgba(90,171,240,0.85);
-  }
-
-  /* Footer */
-  .footer {
-    border-top: 1px solid rgba(90,171,240,0.1);
-    padding-top: 1.8rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    animation: fadeUp 0.65s 0.5s ease both;
-  }
-
-  .footer-l { font-family:'DM Mono',monospace; font-size:10.5px; color:rgba(238,242,255,0.25); }
-  .footer-r { font-family:'DM Serif Display',serif; font-size:13px; color: var(--gold); opacity:.5; }
-
-  /* Card stagger */
-  .card:nth-child(1) { animation: fadeLeft 0.55s 0.28s ease both; }
-  .card:nth-child(2) { animation: fadeLeft 0.55s 0.36s ease both; }
-  .card:nth-child(3) { animation: fadeLeft 0.55s 0.44s ease both; }
-
-  @keyframes fadeUp   { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes fadeLeft { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
-
-  @media(max-width:540px){
-    .container{ padding:2.5rem 1.25rem 4rem; }
-    .paper-title{ font-size:1.5rem; }
-    .authors{ flex-direction:column; }
-    .footer{ flex-direction:column; align-items:flex-start; }
-  }
+/* responsive */
+@media(max-width:600px){
+  .hero{padding:3rem 1.25rem 2.5rem}
+  section{padding:2.2rem 0}
+}
 </style>
 </head>
 <body>
-<div class="top-glow"></div>
-<div class="container">
 
-  <div class="conf-badge"><span class="dot"></span>IJCNN 2026 &nbsp;·&nbsp; Poster Presentation</div>
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">VASTSum</a>
+    <ul class="nav-links">
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#method">Method</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#bibtex">BibTeX</a></li>
+    </ul>
+  </div>
+</nav>
 
-  <h1 class="paper-title">
+<!-- HERO -->
+<div class="hero">
+  <div class="conf-pill"><span class="dot"></span>IJCNN 2026 &nbsp;·&nbsp; Poster</div>
+  <h1 class="title">
     <em>Uncertainty-Aware</em> and Decoder-Aligned<br>Learning for Video Summarization
   </h1>
-  <div class="model-tag">VASTSum</div>
-
-  <div class="sep"></div>
-
-  <div class="authors">
-    <a href="https://omertariq-kaist.github.io/" class="author-chip" target="_blank" rel="noopener">
-      <img src="https://omertariq-kaist.github.io/assets/images/photos/Omer.jpg" alt="Omer Tariq" class="avatar" onerror="this.style.display='none'">
-      <span>
-        <span class="aname">Omer Tariq</span>
-        <span class="aaff">Neubility Inc.</span>
-      </span>
-    </a>
-    <a href="https://smraza1009.github.io/" class="author-chip" target="_blank" rel="noopener">
-      <img src="https://smraza1009.github.io/assets/images/photos/RAZA.jpeg" alt="Syed Muhammad Raza" class="avatar" onerror="this.style.display='none'">
-      <span>
-        <span class="aname">Syed Muhammad Raza</span>
-        <span class="aaff">Neubility Inc.</span>
-      </span>
-    </a>
-    <div class="author-chip no-link">
-      <div class="avatar-placeholder">JS</div>
-      <span>
-        <span class="aname">Jeongbae Son</span>
-        <span class="aaff">Neubility Inc.</span>
-      </span>
-    </div>
+  <div class="model-name">VASTSum</div>
+  <div class="authors-block">
+    <a href="https://omertariq-kaist.github.io/" target="_blank">Omer Tariq</a><sup>1</sup>&ensp;
+    <a href="https://smraza1009.github.io/" target="_blank">Syed Muhammad Raza</a><sup>1</sup>&ensp;
+    Jeongbae Son<sup>1</sup>
   </div>
-
-  <div class="slabel">Resources</div>
-  <div class="cards">
-    <a href="https://arxiv.org/pdf/2605.09507" class="card c-paper" target="_blank" rel="noopener">
-      <div class="card-icon ci-paper">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#5aabf0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-        </svg>
-      </div>
-      <div class="card-body">
-        <div class="card-title">Full Paper — arXiv</div>
-        <div class="card-sub">arxiv.org/pdf/2605.09507</div>
-      </div>
-      <svg class="card-arrow" viewBox="0 0 20 20" fill="currentColor" width="15" height="15">
-        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-      </svg>
+  <div class="affil"><sup>1</sup>Perception AI, Neubility Inc., Seoul, South Korea</div>
+  <div class="btns">
+    <a href="https://arxiv.org/pdf/2605.09507" class="btn btn-primary" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Paper (arXiv)
     </a>
-
-    <a href="https://omertariq-kaist.github.io/" class="card c-omer" target="_blank" rel="noopener">
-      <div class="card-icon ci-omer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </div>
-      <div class="card-body">
-        <div class="card-title">Omer Tariq</div>
-        <div class="card-sub">omertariq-kaist.github.io</div>
-      </div>
-      <svg class="card-arrow" viewBox="0 0 20 20" fill="currentColor" width="15" height="15">
-        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-      </svg>
+    <a href="https://omertariq-kaist.github.io/" class="btn btn-outline" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Omer Tariq
     </a>
-
-    <a href="https://smraza1009.github.io/" class="card c-raza" target="_blank" rel="noopener">
-      <div class="card-icon ci-raza">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#f0c96a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </div>
-      <div class="card-body">
-        <div class="card-title">Syed Muhammad Raza</div>
-        <div class="card-sub">smraza1009.github.io</div>
-      </div>
-      <svg class="card-arrow" viewBox="0 0 20 20" fill="currentColor" width="15" height="15">
-        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-      </svg>
+    <a href="https://smraza1009.github.io/" class="btn btn-outline" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Syed Muhammad Raza
     </a>
   </div>
-
-  <div class="slabel" style="margin-bottom:.85rem">Abstract</div>
-  <div class="abstract">
-    <p>We propose VASTSum, an uncertainty-aware and decoder-aligned learning framework for video summarization. The method predicts probabilistic frame-level importance scores via a variational formulation, explicitly modeling uncertainty from multi-annotator supervision. A soft-min supervision strategy aligns training with plausible human annotation modes rather than a single collapsed consensus. A decoder-aligned stability regularization promotes robustness of knapsack-based keyshot selection — mitigating the training–evaluation mismatch introduced by discrete decoding. VASTSum achieves state-of-the-art rank correlations on SumMe and TVSum benchmarks with efficient single-pass inference.</p>
-  </div>
-
-  <div class="slabel">Index Terms</div>
-  <div class="keywords">
-    <span class="kw">Video Summarization</span>
-    <span class="kw">Uncertainty-Aware</span>
-    <span class="kw">Variational Inference</span>
-    <span class="kw">Knapsack Decoding</span>
-    <span class="kw">Multi-Annotator Supervision</span>
-    <span class="kw">Temporal Modeling</span>
-    <span class="kw">Deep Learning</span>
-  </div>
-
-  <footer class="footer">
-    <span class="footer-l">IJCNN 2026 &nbsp;·&nbsp; Neubility Inc. &nbsp;·&nbsp; Seoul, South Korea</span>
-    <span class="footer-r">IEEE IJCNN</span>
-  </footer>
-
 </div>
+
+<!-- CONTENT -->
+<div class="page">
+
+  <!-- ABSTRACT -->
+  <section id="abstract">
+    <h2 class="section-title">Abstract</h2>
+    <p class="abstract-text">
+      Video summarization aims to produce a compact representation of a long video by selecting a subset of temporally important segments that best reflect human preferences. This task is inherently difficult due to strong annotation subjectivity and the reliance on discrete decoding procedures — such as temporal segmentation and knapsack-based selection — during evaluation. Most existing approaches either learn <strong>deterministic importance scores</strong> that overlook these characteristics or adopt complex generative models that increase training and inference cost. In this paper, we propose <strong>VASTSum</strong>, an uncertainty-aware and decoder-aligned learning framework for video summarization that addresses both challenges within a single-pass model. The proposed method predicts <strong>probabilistic frame-level importance scores</strong> using a variational formulation, enabling explicit modeling of uncertainty arising from multi-annotator supervision. To account for subjectivity, we employ a supervision strategy that encourages alignment with plausible human annotation modes rather than enforcing a single consensus target. Furthermore, we introduce a <strong>decoder-aligned regularization</strong> that promotes stability of knapsack-based summary selection, reducing sensitivity to small perturbations in predicted scores. Experimental results on SumMe and TVSum show consistent and competitive Kendall and Spearman correlations across multiple data splits, demonstrating improved robustness under annotation disagreement while maintaining efficient single-forward inference.
+    </p>
+  </section>
+
+  <!-- CONTRIBUTIONS -->
+  <section id="contributions">
+    <h2 class="section-title">Contributions</h2>
+    <ul class="contrib-list">
+      <li>
+        <div class="contrib-num">1</div>
+        <p><strong>Uncertainty-Aware Variational Head.</strong> We propose VASTSum, a unified variational formulation for frame-importance prediction that outputs both a mean estimate and an uncertainty signal, explicitly capturing ambiguity induced by multi-annotator supervision.</p>
+      </li>
+      <li>
+        <div class="contrib-num">2</div>
+        <p><strong>Mode-Aligned Supervision.</strong> We train from plausible annotator-consistent modes via a soft-min BCE strategy rather than collapsing subjective labels into a single averaged target, reducing over-smoothed supervision while preserving distinct summarization preferences.</p>
+      </li>
+      <li>
+        <div class="contrib-num">3</div>
+        <p><strong>Decoder-Aligned Stability Regularization.</strong> We introduce a knapsack stability margin loss that promotes invariant keyshot selection under the standard segmentation-plus-knapsack decoding pipeline, mitigating the training–evaluation mismatch.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- METHOD -->
+  <section id="method">
+    <h2 class="section-title">Method</h2>
+    <div class="pipeline-wrap">
+      <!-- Pipeline diagram placeholder — replace src with your actual figure -->
+      <svg viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;font-family:Inter,sans-serif">
+        <!-- Background -->
+        <rect width="800" height="220" fill="#f8f8f6" rx="8"/>
+        <!-- Stage boxes -->
+        <!-- 1: Input -->
+        <rect x="16" y="60" width="120" height="100" rx="7" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.2"/>
+        <text x="76" y="102" text-anchor="middle" font-size="11" font-weight="600" fill="#3730a3">Frame</text>
+        <text x="76" y="116" text-anchor="middle" font-size="11" font-weight="600" fill="#3730a3">Features</text>
+        <text x="76" y="133" text-anchor="middle" font-size="10" fill="#6366f1">T×D (pool5)</text>
+        <!-- Arrow -->
+        <line x1="138" y1="110" x2="158" y2="110" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- 2: Scorer -->
+        <rect x="160" y="30" width="180" height="160" rx="7" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.2"/>
+        <text x="250" y="55" text-anchor="middle" font-size="10.5" font-weight="600" fill="#15803d">Hierarchical Segment-</text>
+        <text x="250" y="69" text-anchor="middle" font-size="10.5" font-weight="600" fill="#15803d">Context Scorer</text>
+        <rect x="175" y="80" width="150" height="24" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+        <text x="250" y="96" text-anchor="middle" font-size="9.5" fill="#166534">Segment Tokenization</text>
+        <rect x="175" y="110" width="150" height="24" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+        <text x="250" y="126" text-anchor="middle" font-size="9.5" fill="#166534">Segment Transformer</text>
+        <rect x="175" y="140" width="150" height="24" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
+        <text x="250" y="156" text-anchor="middle" font-size="9.5" fill="#166534">Gated Frame Fusion</text>
+        <!-- Arrow -->
+        <line x1="342" y1="110" x2="362" y2="110" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- 3: Variational Head -->
+        <rect x="364" y="45" width="160" height="130" rx="7" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.2"/>
+        <text x="444" y="68" text-anchor="middle" font-size="10.5" font-weight="600" fill="#c2410c">Uncertainty-Aware</text>
+        <text x="444" y="82" text-anchor="middle" font-size="10.5" font-weight="600" fill="#c2410c">Importance Head</text>
+        <rect x="378" y="93" width="130" height="24" rx="4" fill="#ffedd5" stroke="#fdba74" stroke-width="1"/>
+        <text x="443" y="109" text-anchor="middle" font-size="9.5" fill="#9a3412">Latent Posterior q(z|h)</text>
+        <rect x="378" y="122" width="130" height="24" rx="4" fill="#ffedd5" stroke="#fdba74" stroke-width="1"/>
+        <text x="443" y="138" text-anchor="middle" font-size="9.5" fill="#9a3412">Heteroscedastic (μ, log v)</text>
+        <!-- Arrow -->
+        <line x1="526" y1="110" x2="546" y2="110" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- 4: Decoder -->
+        <rect x="548" y="55" width="140" height="110" rx="7" fill="#fdf4ff" stroke="#e9d5ff" stroke-width="1.2"/>
+        <text x="618" y="80" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7e22ce">Knapsack</text>
+        <text x="618" y="94" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7e22ce">Decoder</text>
+        <rect x="562" y="105" width="112" height="22" rx="4" fill="#f3e8ff" stroke="#d8b4fe" stroke-width="1"/>
+        <text x="618" y="120" text-anchor="middle" font-size="9.5" fill="#6b21a8">KTS Segmentation</text>
+        <rect x="562" y="132" width="112" height="22" rx="4" fill="#f3e8ff" stroke="#d8b4fe" stroke-width="1"/>
+        <text x="618" y="147" text-anchor="middle" font-size="9.5" fill="#6b21a8">0/1 Knapsack (15%)</text>
+        <!-- Arrow -->
+        <line x1="690" y1="110" x2="710" y2="110" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- 5: Output -->
+        <rect x="712" y="72" width="72" height="76" rx="7" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.2"/>
+        <text x="748" y="106" text-anchor="middle" font-size="11" font-weight="600" fill="#3730a3">Summary</text>
+        <text x="748" y="120" text-anchor="middle" font-size="10" fill="#6366f1">Mask ŷ∈{0,1}</text>
+        <!-- Arrow marker -->
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#aaa"/>
+          </marker>
+        </defs>
+        <!-- Bottom label -->
+        <text x="400" y="208" text-anchor="middle" font-size="10" fill="#999">VASTSum Pipeline Overview</text>
+      </svg>
+      <p class="fig-caption"><strong>Fig. 1:</strong> Overview of VASTSum. Sampled pool5 frame features are projected and processed by a hierarchical segment-context scorer. A variational frame-importance head predicts a per-frame latent posterior and heteroscedastic importance parameters, sampling during training and using the posterior mean at inference. Predicted scores feed a segmentation-consistent 0–1 knapsack decoder that selects segments under a 15% length budget to output the binary summary mask.</p>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <h2 class="section-title">Results</h2>
+    <div class="results-tables">
+
+      <!-- TVT Protocol -->
+      <div class="tbl-wrap">
+        <div class="tbl-head">TVT Protocol</div>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>τ</th><th>ρ</th><th>τ</th><th>ρ</th></tr>
+            <tr><th></th><th colspan="2" style="font-size:11px;color:#888">SumMe</th><th colspan="2" style="font-size:11px;color:#888">TVSum</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Random</td><td>0.000</td><td>0.000</td><td>0.000</td><td>0.000</td></tr>
+            <tr><td>Human</td><td>0.205</td><td>0.213</td><td>0.177</td><td>0.204</td></tr>
+            <tr><td>A2Summ</td><td>0.088</td><td>0.096</td><td>0.157</td><td>0.206</td></tr>
+            <tr><td>VASNet</td><td>0.089</td><td>0.099</td><td>0.153</td><td>0.205</td></tr>
+            <tr><td>PGL-SUM</td><td>0.104</td><td>0.116</td><td>0.141</td><td>0.186</td></tr>
+            <tr><td>CSTA</td><td>0.108</td><td>0.120</td><td>0.168</td><td>0.221</td></tr>
+            <tr><td>SummDiff</td><td>0.133</td><td>0.148</td><td>0.173</td><td>0.226</td></tr>
+            <tr class="ours"><td>VASTSum (Ours)</td><td class="best">0.157</td><td class="best">0.161</td><td class="best">0.179</td><td class="best">0.270</td></tr>
+          </tbody>
+        </table>
+        <div class="tbl-note">Best per column in bold. Kendall's τ and Spearman's ρ.</div>
+      </div>
+
+      <!-- 5FCV Protocol -->
+      <div class="tbl-wrap">
+        <div class="tbl-head">5-Fold Cross-Validation</div>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>τ</th><th>ρ</th><th>τ</th><th>ρ</th></tr>
+            <tr><th></th><th colspan="2" style="font-size:11px;color:#888">SumMe</th><th colspan="2" style="font-size:11px;color:#888">TVSum</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>VASNet</td><td>0.160</td><td>0.170</td><td>0.160</td><td>0.170</td></tr>
+            <tr><td>SSPVS</td><td>0.192</td><td>0.257</td><td>0.181</td><td>0.238</td></tr>
+            <tr><td>VSS-Net</td><td>—</td><td>—</td><td>0.190</td><td>0.249</td></tr>
+            <tr><td>DMASum</td><td>0.063</td><td>0.089</td><td>0.203</td><td>0.267</td></tr>
+            <tr><td>CSTA</td><td>0.246</td><td>0.274</td><td>0.194</td><td>0.255</td></tr>
+            <tr><td>SummDiff</td><td>0.256</td><td>0.285</td><td>0.195</td><td>0.255</td></tr>
+            <tr class="ours"><td>VASTSum (Ours)</td><td>0.253</td><td>0.281</td><td class="best">0.229</td><td class="best">0.298</td></tr>
+          </tbody>
+        </table>
+        <div class="tbl-note">Best per column in bold. VASTSum leads on TVSum by a clear margin.</div>
+      </div>
+    </div>
+
+    <!-- Ablation -->
+    <h2 class="section-title" style="margin-top:2.5rem">Ablation Study</h2>
+    <div class="ablation-wrap">
+      <table class="ablation">
+        <thead>
+          <tr>
+            <th style="text-align:left">Setting</th>
+            <th colspan="2">SumMe τ / ρ</th>
+            <th colspan="2">TVSum τ / ρ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="full-model"><td>VASTSum (full)</td><td colspan="2">0.253 / 0.281</td><td colspan="2">0.229 / 0.298</td></tr>
+          <tr><td colspan="4" style="padding:.35rem .75rem;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#aaa;background:#fafaf8">Regularization</td></tr>
+          <tr><td>w/o CSTA-inspired reg.</td><td colspan="2">0.195 / 0.220</td><td colspan="2">0.197 / 0.260</td></tr>
+          <tr><td>dropout 0.6, LR 2.5×10⁻⁴</td><td colspan="2">0.176 / 0.196</td><td colspan="2">0.194 / 0.254</td></tr>
+          <tr><td colspan="4" style="padding:.35rem .75rem;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#aaa;background:#fafaf8">Architecture</td></tr>
+          <tr><td>+ gated residual modules</td><td colspan="2">0.184 / 0.205</td><td colspan="2">0.197 / 0.260</td></tr>
+          <tr><td>+ CSTA-style attention block</td><td colspan="2">0.199 / 0.220</td><td colspan="2">0.188 / 0.245</td></tr>
+          <tr><td colspan="4" style="padding:.35rem .75rem;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#aaa;background:#fafaf8">Uncertainty</td></tr>
+          <tr><td>w/o KL (λ<sub>kl</sub>=0)</td><td colspan="2">0.203 / 0.238</td><td colspan="2">0.218 / 0.252</td></tr>
+          <tr><td>d<sub>z</sub> smaller</td><td colspan="2">0.217 / 0.249</td><td colspan="2">0.228 / 0.278</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BIBTEX -->
+  <section id="bibtex">
+    <h2 class="section-title">BibTeX</h2>
+    <div class="bibtex-box">
+      <pre id="bib-text">@inproceedings{tariq2026vastsum,
+  title     = {Uncertainty-Aware and Decoder-Aligned Learning
+               for Video Summarization},
+  author    = {Tariq, Omer and Raza, Syed Muhammad and Son, Jeongbae},
+  booktitle = {Proceedings of the International Joint Conference
+               on Neural Networks (IJCNN)},
+  year      = {2026},
+  organization = {IEEE}
+}</pre>
+      <button class="copy-btn" onclick="copyBib(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy BibTeX
+      </button>
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+<footer>
+  <p>
+    Accepted at <strong>IJCNN 2026</strong> &nbsp;·&nbsp;
+    Perception AI, <strong>Neubility Inc.</strong>, Seoul, South Korea<br>
+    Supported by IITP grant No. RS-2024-00443391 (Korea–Japan Joint Research on Autonomous Mobility Control).<br>
+    Page template inspired by <a href="https://nerfies.github.io" target="_blank">Nerfies</a>.
+  </p>
+</footer>
+
+<script>
+function copyBib(btn) {
+  const text = document.getElementById('bib-text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy BibTeX';
+    }, 2500);
+  });
+}
+</script>
 </body>
 </html>
