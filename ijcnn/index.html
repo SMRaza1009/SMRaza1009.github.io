@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IJCNN 2026 — VASTSum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #080f1e;
+    --navy-mid: #0e1c36;
+    --accent: #5aabf0;
+    --accent2: #a78bfa;
+    --gold: #f0c96a;
+    --gold-dim: rgba(240,201,106,0.13);
+    --white: #eef2ff;
+    --muted: rgba(238,242,255,0.5);
+    --border: rgba(90,171,240,0.18);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle dot-grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(90,171,240,0.08) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Top glow */
+  .top-glow {
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 500px;
+    background: radial-gradient(ellipse, rgba(90,171,240,0.1) 0%, rgba(167,139,250,0.06) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: glowPulse 9s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse {
+    0%,100% { opacity:.7; transform:translateX(-50%) scale(1); }
+    50% { opacity:1; transform:translateX(-50%) scale(1.06); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 4rem 2rem 6rem;
+  }
+
+  /* Conference badge */
+  .conf-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gold-dim);
+    border: 1px solid rgba(240,201,106,0.3);
+    border-radius: 100px;
+    padding: 5px 15px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2.2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .conf-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: blink 2.2s ease-in-out infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+  /* Paper title */
+  .paper-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.7rem, 3.8vw, 2.5rem);
+    line-height: 1.2;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+    animation: fadeUp 0.65s 0.08s ease both;
+  }
+
+  .paper-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .model-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: rgba(90,171,240,0.12);
+    border: 1px solid rgba(90,171,240,0.28);
+    color: var(--accent);
+    border-radius: 6px;
+    padding: 3px 10px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.65s 0.12s ease both;
+    letter-spacing: 0.04em;
+  }
+
+  /* Thin separator */
+  .sep {
+    width: 48px; height: 1.5px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    border-radius: 2px;
+    margin-bottom: 1.8rem;
+    animation: fadeUp 0.65s 0.14s ease both;
+  }
+
+  /* Authors */
+  .authors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.65s 0.18s ease both;
+  }
+
+  .author-chip {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: rgba(14,28,54,0.8);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 7px 14px 7px 7px;
+    text-decoration: none;
+    color: var(--white);
+    transition: all 0.22s ease;
+    backdrop-filter: blur(6px);
+  }
+
+  .author-chip:hover {
+    background: rgba(90,171,240,0.12);
+    border-color: rgba(90,171,240,0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(90,171,240,0.18);
+  }
+
+  .author-chip.no-link { cursor: default; }
+  .author-chip.no-link:hover { transform: none; box-shadow: none; background: rgba(14,28,54,0.8); border-color: var(--border); }
+
+  .avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(90,171,240,0.5);
+    flex-shrink: 0;
+  }
+
+  .avatar-placeholder {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(90,171,240,0.15);
+    border: 1.5px solid rgba(90,171,240,0.3);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500; color: var(--accent);
+  }
+
+  .aname { font-size: 13px; font-weight: 500; display: block; line-height: 1.3; }
+  .aaff  { font-size: 10.5px; color: var(--muted); display: block; }
+
+  /* Section label */
+  .slabel {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.75;
+    margin-bottom: 0.85rem;
+  }
+
+  /* Resource cards */
+  .cards { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 3rem; }
+
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(14,28,54,0.65);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 14px 18px;
+    text-decoration: none;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), border-color 0.22s, box-shadow 0.22s;
+  }
+
+  .card::after {
+    content:'';
+    position:absolute;
+    inset:0;
+    opacity:0;
+    transition: opacity 0.25s;
+  }
+
+  .card.c-paper::after  { background: radial-gradient(circle at 5% 50%, rgba(90,171,240,0.1), transparent 55%); }
+  .card.c-raza::after   { background: radial-gradient(circle at 5% 50%, rgba(240,201,106,0.09), transparent 55%); }
+  .card.c-omer::after   { background: radial-gradient(circle at 5% 50%, rgba(167,139,250,0.09), transparent 55%); }
+
+  .card:hover::after { opacity:1; }
+  .card:hover { transform: translateX(5px); box-shadow: 0 4px 28px rgba(90,171,240,0.13); border-color: rgba(90,171,240,0.38); }
+  .card.c-raza:hover  { border-color: rgba(240,201,106,0.35); }
+  .card.c-omer:hover  { border-color: rgba(167,139,250,0.35); }
+
+  .card-icon {
+    width: 40px; height: 40px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ci-paper { background: rgba(90,171,240,0.13); }
+  .ci-raza  { background: rgba(240,201,106,0.11); }
+  .ci-omer  { background: rgba(167,139,250,0.11); }
+
+  .card-icon svg { width: 18px; height: 18px; }
+
+  .card-body { flex:1; min-width:0; }
+  .card-title { font-size: 13.5px; font-weight: 500; margin-bottom: 1px; }
+  .card-sub   { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .card-arrow { flex-shrink:0; opacity:.3; transition: opacity .22s, transform .22s; }
+  .card:hover .card-arrow { opacity:.7; transform: translateX(3px); }
+
+  /* Abstract */
+  .abstract {
+    background: rgba(10,18,36,0.5);
+    border-left: 2.5px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.65s 0.38s ease both;
+  }
+
+  .abstract p {
+    font-size: 13px;
+    line-height: 1.78;
+    color: rgba(238,242,255,0.55);
+    font-weight: 300;
+  }
+
+  /* Keywords */
+  .keywords { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 3.5rem; animation: fadeUp 0.65s 0.44s ease both; }
+  .kw {
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px;
+    padding: 4px 11px;
+    background: rgba(90,171,240,0.07);
+    border: 1px solid rgba(90,171,240,0.18);
+    border-radius: 100px;
+    color: rgba(90,171,240,0.85);
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid rgba(90,171,240,0.1);
+    padding-top: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    animation: fadeUp 0.65s 0.5s ease both;
+  }
+
+  .footer-l { font-family:'DM Mono',monospace; font-size:10.5px; color:rgba(238,242,255,0.25); }
+  .footer-r { font-family:'DM Serif Display',serif; font-size:13px; color: var(--gold); opacity:.5; }
+
+  /* Card stagger */
+  .card:nth-child(1) { animation: fadeLeft 0.55s 0.28s ease both; }
+  .card:nth-child(2) { animation: fadeLeft 0.55s 0.36s ease both; }
+  .card:nth-child(3) { animation: fadeLeft 0.55s 0.44s ease both; }
+
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeLeft { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
+
+  @media(max-width:540px){
+    .container{ padding:2.5rem 1.25rem 4rem; }
+    .paper-title{ font-size:1.5rem; }
+    .authors{ flex-direction:column; }
+    .footer{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="top-glow"></div>
+<div class="container">
+
+  <div class="conf-badge"><span class="dot"></span>IJCNN 2026 &nbsp;·&nbsp; Poster Presentation</div>
+
+  <h1 class="paper-title">
+    <em>Uncertainty-Aware</em> and Decoder-Aligned<br>Learning for Video Summarization
+  </h1>
+  <div class="model-tag">VASTSum</div>
+
+  <div class="sep"></div>
+
+  <div class="authors">
+    <a href="https://omertariq-kaist.github.io/" class="author-chip" target="_blank" rel="noopener">
+      <img src="https://omertariq-kaist.github.io/assets/images/photos/Omer.jpg" alt="Omer Tariq" class="avatar" onerror="this.style.display='none'">
+      <span>
+        <span class="aname">Omer Tariq</span>
+        <span class="aaff">Neubility Inc.</span>
+      </span>
+    </a>
+    <a href="https://smraza1009.github.io/" class="author-chip" target="_blank" rel="noopener">
+      <img src="https://smraza1009.github.io/assets/images/photos/RAZA.jpeg" alt="Syed Muhammad Raza" class="avatar" onerror="this.style.display='none'">
+      <span>
+        <span class="aname">Syed Muhammad Raza</span>
+        <span class="aaff">Neubility Inc.</span>
+      </span>
+    </a>
+    <div class="author-chip no-link">
+      <div class="avatar-placeholder">JS</div>
+      <span>
+        <span class="aname">Jeongbae Son</span>
+        <span class="aaff">Neubility Inc.</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="slabel">Resources</div>
+  <div class="cards">
+    <a href="https://arxiv.org/pdf/2605.09507" class="card c-paper" target="_blank" rel="noopener">
+      <div class="card-icon ci-paper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#5aabf0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Full Paper — arXiv</div>
+        <div class="card-sub">arxiv.org/pdf/2605.09507</div>
+      </div>
+      <svg class="card-arrow" viewBox="0 0 20 20" fill="currentColor" width="15" height="15">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+    </a>
+
+    <a href="https://omertariq-kaist.github.io/" class="card c-omer" target="_blank" rel="noopener">
+      <div class="card-icon ci-omer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Omer Tariq</div>
+        <div class="card-sub">omertariq-kaist.github.io</div>
+      </div>
+      <svg class="card-arrow" viewBox="0 0 20 20" fill="currentColor" width="15" height="15">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+    </a>
+
+    <a href="https://smraza1009.github.io/" class="card c-raza" target="_blank" rel="noopener">
+      <div class="card-icon ci-raza">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f0c96a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div class="card-body">
+        <div class="card-title">Syed Muhammad Raza</div>
+        <div class="card-sub">smraza1009.github.io</div>
+      </div>
+      <svg class="card-arrow" viewBox="0 0 20 20" fill="currentColor" width="15" height="15">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="slabel" style="margin-bottom:.85rem">Abstract</div>
+  <div class="abstract">
+    <p>We propose VASTSum, an uncertainty-aware and decoder-aligned learning framework for video summarization. The method predicts probabilistic frame-level importance scores via a variational formulation, explicitly modeling uncertainty from multi-annotator supervision. A soft-min supervision strategy aligns training with plausible human annotation modes rather than a single collapsed consensus. A decoder-aligned stability regularization promotes robustness of knapsack-based keyshot selection — mitigating the training–evaluation mismatch introduced by discrete decoding. VASTSum achieves state-of-the-art rank correlations on SumMe and TVSum benchmarks with efficient single-pass inference.</p>
+  </div>
+
+  <div class="slabel">Index Terms</div>
+  <div class="keywords">
+    <span class="kw">Video Summarization</span>
+    <span class="kw">Uncertainty-Aware</span>
+    <span class="kw">Variational Inference</span>
+    <span class="kw">Knapsack Decoding</span>
+    <span class="kw">Multi-Annotator Supervision</span>
+    <span class="kw">Temporal Modeling</span>
+    <span class="kw">Deep Learning</span>
+  </div>
+
+  <footer class="footer">
+    <span class="footer-l">IJCNN 2026 &nbsp;·&nbsp; Neubility Inc. &nbsp;·&nbsp; Seoul, South Korea</span>
+    <span class="footer-r">IEEE IJCNN</span>
+  </footer>
+
+</div>
+</body>
+</html>
