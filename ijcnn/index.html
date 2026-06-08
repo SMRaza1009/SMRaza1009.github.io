@@ -204,64 +204,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-
   <section id="method">
     <h2 class="section-title">Method</h2>
     <div class="pipeline-wrap">
-      <!-- Pipeline diagram placeholder — replace src with your actual figure -->
-      <svg viewBox="0 0 800 220" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;font-family:Inter,sans-serif">
-        <!-- Background -->
-        <rect width="800" height="220" fill="#f8f8f6" rx="8"/>
-        <!-- Stage boxes -->
-        <!-- 1: Input -->
-        <rect x="16" y="60" width="120" height="100" rx="7" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.2"/>
-        <text x="76" y="102" text-anchor="middle" font-size="11" font-weight="600" fill="#3730a3">Frame</text>
-        <text x="76" y="116" text-anchor="middle" font-size="11" font-weight="600" fill="#3730a3">Features</text>
-        <text x="76" y="133" text-anchor="middle" font-size="10" fill="#6366f1">T×D (pool5)</text>
-        <!-- Arrow -->
-        <line x1="138" y1="110" x2="158" y2="110" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr)"/>
-        <!-- 2: Scorer -->
-        <rect x="160" y="30" width="180" height="160" rx="7" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.2"/>
-        <text x="250" y="55" text-anchor="middle" font-size="10.5" font-weight="600" fill="#15803d">Hierarchical Segment-</text>
-        <text x="250" y="69" text-anchor="middle" font-size="10.5" font-weight="600" fill="#15803d">Context Scorer</text>
-        <rect x="175" y="80" width="150" height="24" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
-        <text x="250" y="96" text-anchor="middle" font-size="9.5" fill="#166534">Segment Tokenization</text>
-        <rect x="175" y="110" width="150" height="24" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
-        <text x="250" y="126" text-anchor="middle" font-size="9.5" fill="#166534">Segment Transformer</text>
-        <rect x="175" y="140" width="150" height="24" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="1"/>
-        <text x="250" y="156" text-anchor="middle" font-size="9.5" fill="#166534">Gated Frame Fusion</text>
-        <!-- Arrow -->
-        <line x1="342" y1="110" x2="362" y2="110" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr)"/>
-        <!-- 3: Variational Head -->
-        <rect x="364" y="45" width="160" height="130" rx="7" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.2"/>
-        <text x="444" y="68" text-anchor="middle" font-size="10.5" font-weight="600" fill="#c2410c">Uncertainty-Aware</text>
-        <text x="444" y="82" text-anchor="middle" font-size="10.5" font-weight="600" fill="#c2410c">Importance Head</text>
-        <rect x="378" y="93" width="130" height="24" rx="4" fill="#ffedd5" stroke="#fdba74" stroke-width="1"/>
-        <text x="443" y="109" text-anchor="middle" font-size="9.5" fill="#9a3412">Latent Posterior q(z|h)</text>
-        <rect x="378" y="122" width="130" height="24" rx="4" fill="#ffedd5" stroke="#fdba74" stroke-width="1"/>
-        <text x="443" y="138" text-anchor="middle" font-size="9.5" fill="#9a3412">Heteroscedastic (μ, log v)</text>
-        <!-- Arrow -->
-        <line x1="526" y1="110" x2="546" y2="110" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr)"/>
-        <!-- 4: Decoder -->
-        <rect x="548" y="55" width="140" height="110" rx="7" fill="#fdf4ff" stroke="#e9d5ff" stroke-width="1.2"/>
-        <text x="618" y="80" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7e22ce">Knapsack</text>
-        <text x="618" y="94" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7e22ce">Decoder</text>
-        <rect x="562" y="105" width="112" height="22" rx="4" fill="#f3e8ff" stroke="#d8b4fe" stroke-width="1"/>
-        <text x="618" y="120" text-anchor="middle" font-size="9.5" fill="#6b21a8">KTS Segmentation</text>
-        <rect x="562" y="132" width="112" height="22" rx="4" fill="#f3e8ff" stroke="#d8b4fe" stroke-width="1"/>
-        <text x="618" y="147" text-anchor="middle" font-size="9.5" fill="#6b21a8">0/1 Knapsack (15%)</text>
-        <!-- Arrow -->
-        <line x1="690" y1="110" x2="710" y2="110" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr)"/>
-        <!-- 5: Output -->
-        <rect x="712" y="72" width="72" height="76" rx="7" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.2"/>
-        <text x="748" y="106" text-anchor="middle" font-size="11" font-weight="600" fill="#3730a3">Summary</text>
-        <text x="748" y="120" text-anchor="middle" font-size="10" fill="#6366f1">Mask ŷ∈{0,1}</text>
-        <!-- Arrow marker -->
-        <defs>
-          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-            <path d="M0,0 L0,6 L8,3 z" fill="#aaa"/>
-          </marker>
-        </defs>
-        <!-- Bottom label -->
-        <text x="400" y="208" text-anchor="middle" font-size="10" fill="#999">VASTSum Pipeline Overview</text>
-      </svg>
-      <p class="fig-caption"><strong>Fig. 1:</strong> Overview of VASTSum. Sampled pool5 frame features are projected and processed by a hierarchical segment-context scorer. A variational frame-importance head predicts a per-frame latent posterior and heteroscedastic importance parameters, sampling during training and using the posterior mean at inference. Predicted scores feed a segmentation-consistent 0–1 knapsack decoder that selects segments under a 15% length budget to output the binary summary mask.</p>
+      <img src="vastsum_fig.jpg" alt="VASTSum pipeline overview" style="max-width:100%;border-radius:6px;display:block;margin:0 auto">
+      <p class="fig-caption"><strong>Fig. 1:</strong> Overview of VASTSum. Sampled pool5 frame features are projected and processed by a hierarchical segment-context scorer (left). A variational frame-importance head (centre-left) predicts a per-frame latent posterior and heteroscedastic importance parameters, sampling during training and using the posterior mean at inference. Training objectives and regularization losses are shown centre-right. Predicted scores feed a segmentation-consistent 0–1 knapsack decoder (right) that selects segments under a 15% length budget to output the binary summary mask.</p>
     </div>
   </section>
 
