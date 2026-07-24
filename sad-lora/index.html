@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SAD-LoRA: Spectral Alignment for Low-Rank Knowledge Distillation. ICML 2026 ColorAI Workshop.">
+<title>SAD-LoRA — ICML 2026 ColorAI Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;
+  --bg2:#f8f8f6;
+  --bg3:#f1f0ec;
+  --text:#1a1a1a;
+  --text2:#555550;
+  --text3:#888882;
+  --accent:#c0392b;
+  --accent2:#2c3e7a;
+  --border:#e0dfd8;
+  --serif:'Source Serif 4',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --max:860px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.65;font-size:16px}
+
+/* ── HERO ── */
+.hero{background:var(--bg2);border-bottom:1px solid var(--border);padding:4rem 1.5rem 3rem;text-align:center}
+.conf-pill{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border);border-radius:100px;padding:4px 14px;font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.04em;margin-bottom:1.6rem}
+.conf-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+h1.title{font-family:var(--serif);font-size:clamp(1.65rem,3.5vw,2.4rem);font-weight:600;line-height:1.18;color:var(--text);max-width:720px;margin:0 auto 1.2rem}
+h1.title em{font-style:italic;color:var(--accent2)}
+.model-name{display:inline-block;font-family:var(--mono);font-size:13px;font-weight:500;background:var(--accent2);color:#fff;border-radius:5px;padding:3px 11px;margin-bottom:1.8rem;letter-spacing:.03em}
+.authors-block{font-size:15px;color:var(--text2);margin-bottom:.4rem;line-height:1.9}
+.authors-block a{color:var(--accent2);text-decoration:none;font-weight:500}
+.authors-block a:hover{text-decoration:underline}
+.affil{font-size:13px;color:var(--text3);margin-bottom:2rem}
+
+/* buttons */
+.btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:.5rem}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:8px;font-size:13.5px;font-weight:500;text-decoration:none;transition:all .18s ease;border:1.5px solid transparent}
+.btn-primary{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.btn-primary:hover{background:#1e2d5e;border-color:#1e2d5e}
+.btn-outline{background:#fff;color:var(--text);border-color:var(--border)}
+.btn-outline:hover{border-color:var(--accent2);color:var(--accent2)}
+.btn svg{width:15px;height:15px;flex-shrink:0}
+
+/* ── LAYOUT ── */
+.page{max-width:var(--max);margin:0 auto;padding:0 1.5rem}
+
+/* ── SECTIONS ── */
+section{padding:3rem 0;border-bottom:1px solid var(--border)}
+section:last-child{border-bottom:none}
+h2.section-title{font-family:var(--serif);font-size:1.35rem;font-weight:600;color:var(--text);margin-bottom:1.2rem;display:flex;align-items:center;gap:10px}
+h2.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* abstract */
+.abstract-text{font-family:var(--serif);font-size:16px;line-height:1.8;color:var(--text2);font-weight:300}
+.abstract-text strong{color:var(--text);font-weight:600}
+
+/* contributions */
+.contrib-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:.5rem}
+.contrib-list li{display:flex;gap:14px;align-items:flex-start}
+.contrib-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--accent2);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.contrib-list li p{font-size:15px;color:var(--text2);line-height:1.65}
+.contrib-list li p strong{color:var(--text);font-weight:600}
+
+/* pipeline figure */
+.pipeline-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.5rem;text-align:center;margin-top:.5rem}
+.pipeline-wrap img{max-width:100%;border-radius:6px}
+.fig-caption{font-size:12.5px;color:var(--text3);margin-top:.9rem;line-height:1.6;text-align:left}
+
+/* results tables */
+.tbl-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;overflow-x:auto;margin-top:1.2rem}
+.tbl-head{padding:.75rem 1rem;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);background:var(--bg3);border-bottom:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:.55rem .6rem;text-align:center;font-weight:600;font-size:11.5px;color:var(--text2);border-bottom:1px solid var(--border);background:var(--bg3);white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:.5rem .6rem;text-align:center;border-bottom:1px solid #eeeee8;color:var(--text2);white-space:nowrap}
+td:first-child{text-align:left;font-weight:500;color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr.ours td{background:#eef2ff;font-weight:600;color:var(--accent2)}
+tr.ours td:first-child{color:var(--accent2)}
+td.best{font-weight:700;color:var(--accent)}
+.tbl-note{font-size:12px;color:var(--text3);padding:.65rem 1rem;border-top:1px solid var(--border);background:var(--bg3)}
+
+/* bibtex */
+.bibtex-box{background:#1e1e1e;border-radius:10px;padding:1.2rem 1.5rem;overflow-x:auto;margin-top:.5rem}
+.bibtex-box pre{font-family:var(--mono);font-size:13px;color:#d4d4d4;line-height:1.7;white-space:pre}
+.copy-btn{display:inline-flex;align-items:center;gap:6px;margin-top:1rem;padding:6px 14px;background:transparent;border:1px solid #444;border-radius:6px;color:#aaa;font-size:12px;cursor:pointer;transition:all .15s}
+.copy-btn:hover{border-color:#888;color:#eee}
+.copy-btn.copied{border-color:#4ade80;color:#4ade80}
+
+/* footer */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center}
+footer p{font-size:12.5px;color:var(--text3);line-height:1.8}
+footer a{color:var(--accent2);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:var(--max);margin:0 auto;padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-logo{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--accent2);text-decoration:none}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color .15s}
+.nav-links a:hover{color:var(--accent2)}
+@media(max-width:500px){.nav-links{display:none}}
+
+/* responsive */
+@media(max-width:600px){
+  .hero{padding:3rem 1.25rem 2.5rem}
+  section{padding:2.2rem 0}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">SAD-LoRA</a>
+    <ul class="nav-links">
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#method">Method</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#bibtex">BibTeX</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="conf-pill"><span class="dot"></span>ICML 2026 &nbsp;·&nbsp; ColorAI Workshop</div>
+  <h1 class="title">
+    SAD-LoRA: <em>Spectral Alignment</em> for<br>Low-Rank Knowledge Distillation
+  </h1>
+  <div class="model-name">SAD-LoRA</div>
+  <div class="authors-block">
+    <a href="https://omertariq-kaist.github.io/" target="_blank">Omer Tariq</a><sup>1</sup>&ensp;
+    <a href="https://smraza1009.github.io/" target="_blank">Syed Muhammad Raza</a><sup>1</sup>&ensp;
+    Jeongbae Son<sup>1</sup>
+  </div>
+  <div class="affil"><sup>1</sup>Perception AI, Neubility Inc., Seoul, South Korea</div>
+  <div class="btns">
+    <a href="../assets/papers/ICMLw_2026_SAD_LoRA.pdf" class="btn btn-primary" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Paper (PDF)
+    </a>
+    <a href="https://github.com/OmerTariq-KAIST/sad-lora" class="btn btn-outline" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.75 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.67.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+      Code
+    </a>
+    <a href="https://omertariq-kaist.github.io/" class="btn btn-outline" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Omer Tariq
+    </a>
+    <a href="https://smraza1009.github.io/" class="btn btn-outline" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Syed Muhammad Raza
+    </a>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="page">
+
+  <!-- ABSTRACT -->
+  <section id="abstract">
+    <h2 class="section-title">Abstract</h2>
+    <p class="abstract-text">
+      Distilling a fine-tuned teacher into a LoRA-adapted student is a standard recipe for parameter-efficient compression, but output-level KD does not explicitly control which rank-<em>r</em> weight subspace the adapter occupies. We propose <strong>SAD-LoRA</strong> (Spectral Alignment Distillation), which selects this subspace from the data-weighted student-space reference update and maintains it during training via a differentiable principal-angle loss on the adapter's column space. We show that the data-weighted distillation error decomposes exactly into <strong>subspace misalignment</strong>, <strong>within-subspace coefficient mismatch</strong>, and <strong>irreducible rank residual</strong>; standard KD can affect the first term only indirectly through output gradients. On controlled synthetic problems with a flat teacher spectrum, SAD-LoRA reduces the subspace-misalignment term from 51% to nearly zero and lifts final subspace alignment from 0.49 to 1.00. On RoBERTa-large&nbsp;→&nbsp;RoBERTa-base distillation across six GLUE tasks, SAD-LoRA improves rank efficiency: at <em>r</em>=4, it matches or beats the strongest spectral baseline on five of six tasks, and at <em>r</em>=8 it gives the best result on SST-2 and CoLA. Ablations identify subspace alignment as the load-bearing component, while coefficient matching is auxiliary.
+    </p>
+  </section>
+
+  <!-- CONTRIBUTIONS -->
+  <section id="contributions">
+    <h2 class="section-title">Contributions</h2>
+    <ul class="contrib-list">
+      <li>
+        <div class="contrib-num">1</div>
+        <p><strong>Exact Error Decomposition.</strong> We prove that the data-weighted LoRA distillation error decomposes exactly into subspace misalignment, within-subspace coefficient mismatch, and an irreducible rank residual bounded by the Eckart–Young–Mirsky theorem — isolating a failure mode invisible to output-level KD.</p>
+      </li>
+      <li>
+        <div class="contrib-num">2</div>
+        <p><strong>SAD-LoRA.</strong> A training-time principal-angle alignment loss that keeps the LoRA adapter's column space locked to a frozen, data-weighted teacher-update subspace computed offline via implicit SVD over calibration activations, preventing subspace drift under task and KD gradients.</p>
+      </li>
+      <li>
+        <div class="contrib-num">3</div>
+        <p><strong>Rank-Efficiency Gains on GLUE.</strong> Across RoBERTa-large → RoBERTa-base distillation on six GLUE tasks, SAD-LoRA and its variants match or beat spectral-init baselines (NN-Init, PiSSA-Init) at low rank, with the largest gains on STS-B and CoLA — and ablations confirm subspace alignment, not coefficient matching, carries the load.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- METHOD -->
+  <section id="method">
+    <h2 class="section-title">Method</h2>
+    <div class="pipeline-wrap">
+      <img src="sad-lora-fig.png" alt="SAD-LoRA overview" style="max-width:100%;border-radius:6px;display:block;margin:0 auto">
+      <p class="fig-caption"><strong>Fig. 1:</strong> Overview of SAD-LoRA. <strong>Phase 1 — Teacher Spectral Analysis:</strong> the teacher update ΔW<sub>T</sub> = W<sub>T</sub> − W<sub>0</sub> is truncated via SVD offline into a spectral cache (U<sub>T</sub>, Σ<sub>T</sub>, V<sub>T</sub>). <strong>Phase 2 — Data-Weighted Subspace Estimation:</strong> calibration activations are captured to estimate the input covariance Σ<sub>x</sub>, giving the data-weighted update and target subspace objects (Ũ, σ̃, r*). <strong>Phase 3 — Student Training:</strong> the frozen student base model is augmented with trainable LoRA adapters (A, B); functional distillation (KD loss on teacher/student logits) is combined with geometric distillation — a principal-angle alignment loss between the adapter's column space and the target subspace, plus a singular-value coefficient-matching loss — under an adaptive warmup schedule, with gradients backpropagated only into the LoRA parameters A and B.</p>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <h2 class="section-title">Results</h2>
+
+    <div class="tbl-wrap">
+      <div class="tbl-head">GLUE — Rank r = 4</div>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>SST-2</th><th>MRPC</th><th>STS-B</th><th>CoLA</th><th>QNLI</th><th>RTE</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>KD-LoRA</td><td>93.3 ± 0.4</td><td>87.8 ± 0.9</td><td>0.789 ± 0.033</td><td>0.426 ± 0.013</td><td>91.3 ± 0.2</td><td>65.0 ± 1.6</td></tr>
+          <tr><td>Logit-MSE</td><td>93.8 ± 0.2</td><td>87.2 ± 0.2</td><td>0.789 ± 0.033</td><td>0.423 ± 0.013</td><td>90.8 ± 0.6</td><td>59.0 ± 3.7</td></tr>
+          <tr><td>NN-Init</td><td>93.4 ± 0.4</td><td class="best">90.3 ± 0.6</td><td>0.887 ± 0.003</td><td>0.555 ± 0.008</td><td>92.5 ± 0.1</td><td>69.2 ± 1.0</td></tr>
+          <tr><td>PiSSA-Init</td><td>93.7 ± 0.8</td><td>90.2 ± 0.6</td><td>0.880 ± 0.004</td><td>0.519 ± 0.015</td><td>92.1 ± 0.1</td><td>66.1 ± 1.2</td></tr>
+          <tr class="ours"><td>SAD-LoRA</td><td>94.3 ± 0.2</td><td>89.9 ± 0.3</td><td>0.884 ± 0.002</td><td class="best">0.558 ± 0.006</td><td>92.1 ± 0.0</td><td>69.9 ± 1.3</td></tr>
+          <tr class="ours"><td>SAD-LoRA-Align</td><td>94.1 ± 0.1</td><td>90.1 ± 0.2</td><td class="best">0.887 ± 0.003</td><td>0.553 ± 0.003</td><td class="best">92.5 ± 0.1</td><td class="best">70.0 ± 1.3</td></tr>
+          <tr class="ours"><td>SAD-LoRA-Coeff</td><td class="best">94.5 ± 0.1</td><td>90.0 ± 0.4</td><td>0.885 ± 0.002</td><td>0.539 ± 0.009</td><td>92.2 ± 0.0</td><td>63.1 ± 6.8</td></tr>
+        </tbody>
+      </table>
+      <div class="tbl-note">Mean ± std over three seeds. SST-2/QNLI/RTE: accuracy; MRPC: F1; STS-B: Spearman's ρ; CoLA: Matthews correlation. Best per column in bold.</div>
+    </div>
+
+    <div class="tbl-wrap">
+      <div class="tbl-head">GLUE — Rank r = 8</div>
+      <table>
+        <thead>
+          <tr><th>Method</th><th>SST-2</th><th>MRPC</th><th>STS-B</th><th>CoLA</th><th>QNLI</th><th>RTE</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>KD-LoRA</td><td>93.7 ± 0.2</td><td>90.2 ± 0.7</td><td>0.847 ± 0.018</td><td>0.478 ± 0.016</td><td>92.0 ± 0.2</td><td>67.4 ± 1.1</td></tr>
+          <tr><td>Logit-MSE</td><td>93.5 ± 0.2</td><td>89.8 ± 0.2</td><td>0.847 ± 0.018</td><td>0.473 ± 0.019</td><td>91.9 ± 0.3</td><td>65.2 ± 2.8</td></tr>
+          <tr><td>NN-Init</td><td>93.8 ± 0.1</td><td>90.2 ± 0.9</td><td>0.892 ± 0.004</td><td>0.554 ± 0.005</td><td class="best">92.8 ± 0.2</td><td>72.1 ± 1.4</td></tr>
+          <tr><td>PiSSA-Init</td><td>94.0 ± 0.5</td><td class="best">91.1 ± 0.6</td><td>0.887 ± 0.006</td><td>0.538 ± 0.015</td><td>92.3 ± 0.1</td><td>68.8 ± 2.1</td></tr>
+          <tr class="ours"><td>SAD-LoRA</td><td class="best">94.5 ± 0.2</td><td>90.9 ± 0.4</td><td>0.891 ± 0.003</td><td>0.558 ± 0.005</td><td>92.5 ± 0.1</td><td>71.8 ± 0.8</td></tr>
+          <tr class="ours"><td>SAD-LoRA-Align</td><td>93.6 ± 0.2</td><td>90.1 ± 0.3</td><td class="best">0.893 ± 0.003</td><td class="best">0.562 ± 0.006</td><td class="best">92.8 ± 0.1</td><td class="best">72.2 ± 0.6</td></tr>
+          <tr class="ours"><td>SAD-LoRA-Coeff</td><td>93.7 ± 0.2</td><td>90.5 ± 0.2</td><td>0.891 ± 0.003</td><td>0.537 ± 0.005</td><td>92.5 ± 0.1</td><td>68.0 ± 0.6</td></tr>
+        </tbody>
+      </table>
+      <div class="tbl-note">Relative to KD-LoRA, full SAD-LoRA improves STS-B from 0.789 to 0.891, CoLA from 0.478 to 0.558, and RTE from 67.4 to 71.8 at r = 8.</div>
+    </div>
+
+    <!-- Subspace alignment -->
+    <h2 class="section-title" style="margin-top:2.5rem">Subspace Alignment</h2>
+    <div class="tbl-wrap">
+      <div class="tbl-head">Mean post-training subspace alignment (per task, per rank)</div>
+      <table>
+        <thead>
+          <tr><th>Task</th><th>r = 1</th><th>r = 2</th><th>r = 4</th><th>r = 8</th><th>r = 16</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RTE</td><td class="best">1.00</td><td class="best">1.00</td><td>0.99</td><td>0.99</td><td>0.99</td></tr>
+          <tr><td>MRPC</td><td>0.87</td><td>0.90</td><td>0.94</td><td>0.96</td><td class="best">0.97</td></tr>
+          <tr><td>CoLA</td><td>0.82</td><td>0.90</td><td>0.93</td><td class="best">0.95</td><td class="best">0.97</td></tr>
+          <tr><td>SST-2</td><td>0.75</td><td>0.84</td><td>0.88</td><td>0.91</td><td class="best">0.94</td></tr>
+          <tr><td>QNLI</td><td>0.69</td><td>0.78</td><td>0.84</td><td>0.88</td><td>0.90</td></tr>
+          <tr><td>STS-B</td><td>0.68</td><td>0.82</td><td>0.90</td><td class="best">0.94</td><td class="best">0.96</td></tr>
+        </tbody>
+      </table>
+      <div class="tbl-note">Bold indicates ≥ 0.95 alignment. SAD-LoRA drives the adapter's column space to near-full alignment with the target teacher subspace as rank grows, fastest on RTE and slowest on QNLI.</div>
+    </div>
+
+    <!-- Ablations -->
+    <h2 class="section-title" style="margin-top:2.5rem">Ablations</h2>
+    <p class="abstract-text" style="font-size:14.5px">
+      Subspace alignment is load-bearing: removing the alignment loss (SAD-LoRA-Coeff) is far more damaging than removing coefficient matching (SAD-LoRA-Align). At r = 8, dropping alignment costs 0.025 MCC on CoLA (0.562 → 0.537) and 4.2 accuracy points on RTE (72.2 → 68.0), with noticeably higher variance on small-data tasks (± 6.8 on RTE at r = 4). Coefficient matching is auxiliary — removing it improves or matches the full objective on STS-B, CoLA, QNLI, and RTE, while the full objective remains stronger on SST-2 and MRPC. MRPC is the one consistent exception across the study, where PiSSA-Init's pretrained-weight principal structure remains a stronger inductive bias than the data-weighted teacher update.
+    </p>
+  </section>
+
+  <!-- BIBTEX -->
+  <section id="bibtex">
+    <h2 class="section-title">BibTeX</h2>
+    <div class="bibtex-box">
+      <pre id="bib-text">@inproceedings{tariq2026sadlora,
+  title     = {SAD-LoRA: Spectral Alignment for Low-Rank
+               Knowledge Distillation},
+  author    = {Tariq, Omer and Raza, Syed Muhammad and Son, Jeongbae},
+  booktitle = {ICML 2026 ColorAI Workshop},
+  year      = {2026},
+  volume    = {306},
+  organization = {PMLR}
+}</pre>
+      <button class="copy-btn" onclick="copyBib(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy BibTeX
+      </button>
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+<footer>
+  <p>
+    Accepted at <strong>ICML 2026 ColorAI Workshop</strong> &nbsp;·&nbsp;
+    Perception AI, <strong>Neubility Inc.</strong>, Seoul, South Korea<br>
+    Supported by IITP grant No. RS-2024-00443391 (Korea–Japan Joint Research on Autonomous Mobility Control).<br>
+    Page template inspired by <a href="https://nerfies.github.io" target="_blank">Nerfies</a>.
+  </p>
+</footer>
+
+<script>
+function copyBib(btn) {
+  const text = document.getElementById('bib-text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy BibTeX';
+    }, 2500);
+  });
+}
+</script>
+</body>
+</html>
