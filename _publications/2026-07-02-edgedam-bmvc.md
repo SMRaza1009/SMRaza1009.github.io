@@ -8,7 +8,7 @@ venue: "BMVC 2026"
 date: 2026-07-02
 selected: true
 paper_pdf: "/assets/papers/EdgeDAM_BMVC_2026.pdf"
-image: ""
+image: "/assets/images/publications/EdgeDAM.jpg"
 code: ""
 pub_type: "Conference"
 authorship: "1st Author"
