@@ -22,6 +22,10 @@ portrait_url: "/assets/images/photos/RAZA.jpeg"
 portrait_caption: "Syed Muhammad Raza"
 
 education:
+  - name: "University of Waterloo"
+    logo: "/assets/images/badges/waterloo.png"
+    position: "PhD"
+    date: "Starting Sep 2026"
   - name: "Kumoh National Institute of Technology"
     logo: "/assets/images/badges/KIT_logo.jpg"
     position: "Masters in IT Convergence Engineering"
