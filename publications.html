@@ -31,9 +31,10 @@ container_class: container-xl
         <div><strong>Venue:</strong> {{ pub.venue }}</div>
         <div><strong>Status:</strong> {{ pub.status }}</div>
         <div><strong>Role:</strong> {{ pub.authorship }}</div>
-        {% if pub.paper_pdf and pub.paper_pdf != "" or pub.code and pub.code != "" %}
+        {% if pub.paper_pdf and pub.paper_pdf != "" or pub.supplementary_pdf and pub.supplementary_pdf != "" or pub.code and pub.code != "" %}
         <div class="mt-2">
           {% if pub.paper_pdf and pub.paper_pdf != "" %}<a href="{{ pub.paper_pdf | relative_url }}">[PDF]</a>{% endif %}
+          {% if pub.supplementary_pdf and pub.supplementary_pdf != "" %}<a href="{{ pub.supplementary_pdf | relative_url }}" class="ms-2">[Supplementary]</a>{% endif %}
           {% if pub.code and pub.code != "" %}<a href="{{ pub.code }}" class="ms-2">[Code]</a>{% endif %}
         </div>
         {% endif %}
@@ -60,9 +61,10 @@ container_class: container-xl
         <div><strong>Venue:</strong> {{ pub.venue }}</div>
         <div><strong>Status:</strong> {{ pub.status }}</div>
         <div><strong>Role:</strong> {{ pub.authorship }}</div>
-        {% if pub.paper_pdf and pub.paper_pdf != "" or pub.code and pub.code != "" %}
+        {% if pub.paper_pdf and pub.paper_pdf != "" or pub.supplementary_pdf and pub.supplementary_pdf != "" or pub.code and pub.code != "" %}
         <div class="mt-2">
           {% if pub.paper_pdf and pub.paper_pdf != "" %}<a href="{{ pub.paper_pdf | relative_url }}">[PDF]</a>{% endif %}
+          {% if pub.supplementary_pdf and pub.supplementary_pdf != "" %}<a href="{{ pub.supplementary_pdf | relative_url }}" class="ms-2">[Supplementary]</a>{% endif %}
           {% if pub.code and pub.code != "" %}<a href="{{ pub.code }}" class="ms-2">[Code]</a>{% endif %}
         </div>
         {% endif %}
@@ -95,9 +97,10 @@ container_class: container-xl
         <div><strong>Venue:</strong> {{ pub.venue }}</div>
         <div><strong>Status:</strong> {{ pub.status }}</div>
         <div><strong>Role:</strong> {{ pub.authorship }}</div>
-        {% if pub.paper_pdf and pub.paper_pdf != "" or pub.code and pub.code != "" %}
+        {% if pub.paper_pdf and pub.paper_pdf != "" or pub.supplementary_pdf and pub.supplementary_pdf != "" or pub.code and pub.code != "" %}
         <div class="mt-2">
           {% if pub.paper_pdf and pub.paper_pdf != "" %}<a href="{{ pub.paper_pdf | relative_url }}">[PDF]</a>{% endif %}
+          {% if pub.supplementary_pdf and pub.supplementary_pdf != "" %}<a href="{{ pub.supplementary_pdf | relative_url }}" class="ms-2">[Supplementary]</a>{% endif %}
           {% if pub.code and pub.code != "" %}<a href="{{ pub.code }}" class="ms-2">[Code]</a>{% endif %}
         </div>
         {% endif %}
@@ -124,9 +127,10 @@ container_class: container-xl
         <div><strong>Venue:</strong> {{ pub.venue }}</div>
         <div><strong>Status:</strong> {{ pub.status }}</div>
         <div><strong>Role:</strong> {{ pub.authorship }}</div>
-        {% if pub.paper_pdf and pub.paper_pdf != "" or pub.code and pub.code != "" %}
+        {% if pub.paper_pdf and pub.paper_pdf != "" or pub.supplementary_pdf and pub.supplementary_pdf != "" or pub.code and pub.code != "" %}
         <div class="mt-2">
           {% if pub.paper_pdf and pub.paper_pdf != "" %}<a href="{{ pub.paper_pdf | relative_url }}">[PDF]</a>{% endif %}
+          {% if pub.supplementary_pdf and pub.supplementary_pdf != "" %}<a href="{{ pub.supplementary_pdf | relative_url }}" class="ms-2">[Supplementary]</a>{% endif %}
           {% if pub.code and pub.code != "" %}<a href="{{ pub.code }}" class="ms-2">[Code]</a>{% endif %}
         </div>
         {% endif %}
