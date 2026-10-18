@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASD: Anti-Shortcut Distillation — BMVC 2026</title>
+<meta name="description" content="ASD: Anti-Shortcut Distillation via Temporal Negative Knowledge Transfer. A push–pull knowledge distillation framework that uses an early teacher checkpoint as a temporal negative. BMVC 2026 (Poster).">
+<meta name="author" content="Syed Muhammad Raza">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ASD: Anti-Shortcut Distillation via Temporal Negative Knowledge Transfer">
+<meta property="og:description" content="A push–pull KD framework that pulls the student toward the converged teacher and pushes it away from shortcut directions exposed by an early teacher checkpoint. BMVC 2026 (Poster).">
+<meta property="og:url" content="https://smraza1009.github.io/ASD/">
+<meta property="og:image" content="https://smraza1009.github.io/ASD/images/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+
+<style>
+:root{
+  --bg:#ffffff;
+  --bg-soft:#f6f8fb;
+  --ink:#18202e;
+  --text:#2f3a4c;
+  --muted:#5f6b7f;
+  --line:#e2e7ef;
+  --primary:#163d6b;        /* deep academic blue */
+  --primary-hover:#0f2e52;
+  --primary-soft:#eaf0f8;
+  --accent:#0d7a77;         /* teal */
+  --accent-soft:#e5f3f2;
+  --neg:#b4413c;
+  --serif:"Newsreader", Georgia, "Times New Roman", serif;
+  --sans:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius:14px;
+  --max:1040px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16.5px;line-height:1.7;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 16px}
+
+/* ---------- top nav ---------- */
+.topnav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.topnav .wrap{display:flex;align-items:center;justify-content:space-between;height:54px;gap:16px}
+.topnav .brand{font-weight:700;color:var(--primary);letter-spacing:.02em;font-size:15px;white-space:nowrap}
+.topnav .brand:hover{text-decoration:none}
+.topnav ul{list-style:none;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.topnav ul::-webkit-scrollbar{display:none}
+.topnav li a{display:block;padding:6px 10px;border-radius:8px;color:var(--muted);font-size:14px;font-weight:500;white-space:nowrap}
+.topnav li a:hover{background:var(--primary-soft);color:var(--primary);text-decoration:none}
+
+/* ---------- hero ---------- */
+.hero{text-align:center;padding:64px 0 36px;background:linear-gradient(180deg,#f3f7fc 0%,#ffffff 100%);border-bottom:1px solid var(--line)}
+.venue{display:inline-flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:999px;background:#fff;border:1px solid var(--line);box-shadow:0 1px 2px rgba(22,61,107,.06);font-size:14px;font-weight:600;color:var(--primary)}
+.venue .tag{background:var(--accent);color:#fff;border-radius:999px;padding:2px 10px;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.title{font-family:var(--serif);font-weight:500;color:var(--ink);font-size:clamp(28px,4.6vw,46px);line-height:1.18;letter-spacing:-.01em;margin:22px auto 0;max-width:900px}
+.title .abbr{color:var(--primary);font-weight:600}
+.authors{margin-top:22px;font-size:18px;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 22px}
+.authors a,.authors span.name{color:var(--primary);font-weight:500}
+.authors sup{font-size:12px;color:var(--muted);margin-left:1px}
+.affil{margin-top:8px;color:var(--muted);font-size:15.5px}
+.affil sup{font-size:11px}
+.footnote{margin-top:4px;color:var(--muted);font-size:13.5px}
+.buttons{margin-top:26px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;background:var(--primary);color:#fff;font-weight:600;font-size:15px;border:1px solid var(--primary);transition:background .15s,transform .15s,box-shadow .15s}
+.btn:hover{background:var(--primary-hover);text-decoration:none;transform:translateY(-1px);box-shadow:0 6px 16px rgba(22,61,107,.18)}
+.btn.ghost{background:#fff;color:var(--primary)}
+.btn.ghost:hover{background:var(--primary-soft)}
+.btn svg{width:18px;height:18px;flex:none}
+
+/* ---------- sections ---------- */
+section{padding:56px 0 8px}
+.section-title{font-family:var(--serif);font-weight:600;color:var(--primary);font-size:clamp(26px,3.4vw,32px);text-align:center;margin-bottom:24px;position:relative}
+.section-title::after{content:"";display:block;width:48px;height:3px;border-radius:3px;background:var(--accent);margin:10px auto 0}
+h3.sub{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:22px;margin:36px 0 12px}
+p+p{margin-top:12px}
+.narrow{max-width:820px;margin:0 auto}
+.lead{font-size:17px;text-align:justify;hyphens:auto}
+
+figure{margin:0}
+figure.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:0 1px 3px rgba(24,32,46,.04)}
+figure img{border-radius:8px}
+figcaption{margin-top:12px;font-size:14.5px;color:var(--muted);line-height:1.6}
+figcaption b{color:var(--ink)}
+
+/* ---------- highlights ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:8px 0 8px}
+.stat{background:var(--bg-soft);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;text-align:center}
+.stat .num{font-family:var(--serif);font-size:34px;font-weight:600;color:var(--primary);line-height:1.1}
+.stat .num small{font-size:20px;color:var(--primary);font-weight:600;vertical-align:super;line-height:0}
+.stat .lbl{margin-top:6px;font-size:13.5px;color:var(--muted);line-height:1.45}
+
+/* ---------- method ---------- */
+.steps{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin:8px auto 0;max-width:880px}
+.step{border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px 18px;background:#fff;position:relative;min-width:0}
+.step .k{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:3px 10px;border-radius:999px;margin-bottom:10px}
+.step h4{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.step p{font-size:15px}
+.eq{background:var(--bg-soft);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:14px 16px;margin:16px 0;overflow-x:auto;font-size:16px}
+.eq .katex-display{margin:.3em 0}
+.callout{background:var(--primary-soft);border-radius:var(--radius);padding:18px 20px;margin-top:22px;font-size:15.5px}
+.callout b{color:var(--primary)}
+.hp{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.hp span{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--text)}
+
+/* ---------- tables ---------- */
+.tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:6px 0 16px}
+.tab{font:inherit;font-size:14px;font-weight:600;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer;transition:all .15s}
+.tab:hover{border-color:var(--primary);color:var(--primary)}
+.tab[aria-selected="true"]{background:var(--primary);border-color:var(--primary);color:#fff}
+.panel[hidden]{display:none}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:9px 12px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--line)}
+thead th{background:var(--bg-soft);color:var(--ink);font-weight:600;font-size:13px;line-height:1.35;vertical-align:bottom}
+thead th .pair{display:block;font-weight:500;color:var(--muted);font-size:12px}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:inherit}
+tbody tr{background:#fff}
+tbody tr.ref td{color:var(--muted)}
+tbody tr.ref:last-of-type td,tbody tr.sep td{border-bottom:2px solid var(--line)}
+tbody tr.ours{background:var(--accent-soft)}
+tbody tr.ours td:first-child{font-weight:700;color:var(--accent)}
+tbody tr:last-child td{border-bottom:none}
+td .sd{color:var(--muted);font-size:12px;margin-left:2px}
+td.best{font-weight:700;color:var(--ink)}
+td.best::after{content:"";display:block;height:2px;width:60%;margin:2px auto 0;background:var(--accent);border-radius:2px}
+.tnote{font-size:13.5px;color:var(--muted);margin-top:10px;text-align:center}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.qual-nav{display:flex;justify-content:center;gap:6px;margin:0 0 12px}
+.qual-nav .tab{min-width:42px;padding:6px 12px}
+
+/* ---------- bibtex ---------- */
+.bib{position:relative;background:#0f1b2d;border-radius:var(--radius);padding:20px 20px 18px;overflow-x:auto}
+.bib pre{font-family:var(--mono);font-size:13.5px;line-height:1.7;color:#d7e3f4;white-space:pre}
+.copy{position:absolute;top:12px;right:12px;display:inline-flex;align-items:center;gap:6px;font:600 13px var(--sans);color:#d7e3f4;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 12px;cursor:pointer;transition:background .15s}
+.copy:hover{background:rgba(255,255,255,.16)}
+.copy.done{color:#7fe0c8;border-color:#7fe0c8}
+.copy svg{width:15px;height:15px}
+
+footer{margin-top:64px;border-top:1px solid var(--line);background:var(--bg-soft);padding:28px 0;text-align:center;font-size:13.5px;color:var(--muted)}
+footer p+p{margin-top:6px}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  .hero{padding:44px 0 28px}
+  .authors{font-size:16.5px;gap:2px 16px}
+  .btn{padding:9px 16px;font-size:14px}
+  .stat .num{font-size:28px}
+  section{padding-top:44px}
+  .lead{text-align:left}
+  .topnav .brand{display:none}
+  .topnav ul{margin:0 auto}
+  .topnav li a{padding:6px 7px;font-size:13px}
+  .eq{font-size:14px;padding:12px}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav" aria-label="Sections">
+  <div class="wrap">
+    <a class="brand" href="#top">ASD · BMVC 2026</a>
+    <ul>
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#method">Method</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#bibtex">BibTeX</a></li>
+      <li><a href="/">Homepage</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="venue"><span class="tag">Poster</span>BMVC 2026 · Accepted</div>
+
+    <h1 class="title"><span class="abbr">ASD</span>: Anti-Shortcut Distillation via<br>Temporal Negative Knowledge Transfer</h1>
+
+    <div class="authors">
+      <a href="https://smraza1009.github.io">Syed Muhammad Raza<sup>*1</sup></a>
+      <span class="name">Omer Tariq<sup>1</sup></span>
+      <span class="name">Jeongbae Son<sup>1</sup></span>
+    </div>
+    <div class="affil"><sup>1</sup>Perception AI, Neubility Inc., Seoul, South Korea</div>
+    <div class="footnote"><sup>*</sup>Corresponding Author</div>
+
+    <div class="buttons">
+      <a class="btn" href="/assets/papers/BMVC_Anti_Shortcut_Distillation.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+        Paper
+      </a>
+      <a class="btn" href="/assets/papers/BMVC_Anti_Shortcut_Distillation_Supplementary.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Supplementary
+      </a>
+      <a class="btn" href="https://github.com/SMRaza1009/ASD-Anti-Shortcut-Distillation-via-Temporal-Negative-Knowledge-Transfer-" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+        Code
+      </a>
+      <a class="btn ghost" href="https://smraza1009.github.io/ASD/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Project Page
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= TEASER ================= -->
+<section id="teaser" style="padding-top:40px">
+  <div class="wrap">
+    <figure class="card">
+      <a href="images/asd-pipeline.jpg" target="_blank" rel="noopener"><img src="images/asd-pipeline.jpg" width="2200" height="1162" alt="ASD pipeline: an input image passes through a trainable student, a frozen final teacher and a frozen early teacher. The temporal contrastive loss pulls the student toward the final teacher and pushes it away from the early teacher; the shortcut suppression loss penalizes the student's projection onto the top eigenvectors of the early-to-final feature displacement."></a>
+      <figcaption>
+        <b>The push–pull idea behind ASD.</b> Standard distillation only <em>pulls</em> a student toward a converged teacher. ASD also tells the student what to <em>avoid</em>, using a free by-product of teacher training: an early checkpoint \(T_{\mathrm{early}}\), which still relies on texture, background and colour shortcuts. A three-way forward pass extracts features from the student, the frozen converged teacher \(T_{\mathrm{final}}\) and the frozen \(T_{\mathrm{early}}\). The <b>Temporal Contrastive loss</b> pulls the student toward \(T_{\mathrm{final}}\) and pushes it away from \(T_{\mathrm{early}}\) for the same image. The <b>Shortcut Suppression loss</b> penalizes the student's projection onto the principal shortcut subspace of \(\Delta h = h_{\mathrm{early}} - h_{\mathrm{final}}\).
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= ABSTRACT ================= -->
+<section id="abstract">
+  <div class="wrap narrow">
+    <h2 class="section-title">Abstract</h2>
+    <p class="lead">
+      Knowledge distillation (KD) trains a compact student by attracting it towards a converged teacher. It is silent about which directions the teacher itself learned to suppress: repulsive and bias-aware objectives exist, but none exploits the teacher's own trajectory to identify what the student should avoid. We observe that the missing signal is already encoded in the teacher's optimization trajectory: features that an early-stage teacher emphasizes but that a converged teacher attenuates are precisely the shortcut directions worth pushing the student away from. We instantiate this observation as <b>A</b>nti-<b>S</b>hortcut <b>D</b>istillation (ASD), a push–pull KD framework that treats the converged teacher \(T_{\mathrm{final}}\) as a positive semantic anchor and an early-checkpoint teacher \(T_{\mathrm{early}}\) as a temporal negative reference. ASD couples two losses: a temporal contrastive loss <span style="white-space:nowrap">(\(\mathcal{L}_{\mathrm{TC}}\))</span> that places the early-teacher feature as a same-sample negative against in-batch and memory-bank final-teacher features in an InfoNCE objective; and a shortcut suppression loss <span style="white-space:nowrap">(\(\mathcal{L}_{\mathrm{SS}}\))</span> that penalizes student projection onto the top eigenvectors of \(\mathbb{E}[\Delta h\,\Delta h^{\top}]\), the uncentered second-moment matrix of early-to-final feature displacements. Across 13 teacher–student pairs on CIFAR-100, ImageNet-100, and TinyImageNet, ASD attains the highest clean top-1 accuracy on more than 10 pairs and outperforms standard KD on 12. On CIFAR-100-C corruption robustness, ASD obtains the lowest mean Corruption Error (86.1&nbsp;mCE) on the most challenging cross-architecture pair (WRN-40-2&rarr;ShuffleNet-V2). Mechanistic diagnostics confirm the intended geometry: the ASD student is systematically anti-aligned with the shortcut direction, while its projection onto the robust subspace is substantially larger (0.45 vs. 0.12).
+    </p>
+  </div>
+</section>
+
+<!-- ================= METHOD ================= -->
+<section id="method">
+  <div class="wrap">
+    <h2 class="section-title">Method</h2>
+    <div class="narrow">
+      <p>
+        Networks pick up easy cues such as local texture, colour statistics and background early in training, and only later settle on shape-biased, semantically stable features. A converged teacher records where that process ended, but not the shortcut directions it passed through and then attenuated. ASD turns this trajectory into supervision. Two frozen snapshots of the <em>same</em> teacher are kept: the converged \(T_{\mathrm{final}}\) (what to imitate) and an early checkpoint \(T_{\mathrm{early}}\), taken at 15% of training (what to avoid). Only the student, plus a small projector when feature sizes differ, is trained. The projector is discarded at inference.
+      </p>
+    </div>
+
+    <div class="steps" style="margin-top:28px">
+      <div class="step">
+        <span class="k">Signal</span>
+        <h4>Temporal shortcut displacement</h4>
+        <p>For each input, the change between teacher states is a label-free indicator of what convergence suppressed:</p>
+        <div class="eq">\[\Delta h(x) = h_{\mathrm{early}}(x) - h_{\mathrm{final}}(x)\]</div>
+        <p>Per mini-batch, ASD forms the <em>uncentered</em> second moment \(\widehat{\mathbf{C}}_{\mathrm{sc}} = \tfrac{1}{|\mathcal{B}|}\sum_i \Delta h_i \Delta h_i^{\top}\) and keeps its top-\(K\) eigenvectors \(\mathbf{U}_K\) as the shortcut subspace. It is left uncentered because the mean displacement can itself be a dominant shortcut.</p>
+      </div>
+      <div class="step">
+        <span class="k">Pull + Push</span>
+        <h4>Temporal Contrastive loss \(\mathcal{L}_{\mathrm{TC}}\)</h4>
+        <p>An InfoNCE objective in which the final-teacher feature is the positive and the <em>same image's</em> early-teacher feature is an explicit negative, alongside in-batch and memory-bank \(T_{\mathrm{final}}\) negatives:</p>
+        <div class="eq">\[\mathcal{L}_{\mathrm{TC}}^{(i)} = -\log \frac{e^{z_S^i\cdot z_F^i/\tau_c}}{e^{z_S^i\cdot z_F^i/\tau_c} + \underbrace{e^{z_S^i\cdot z_E^i/\tau_c}}_{\text{temporal neg.}} + \sum_{j\neq i} e^{z_S^i\cdot z_F^j/\tau_c} + \sum_{m} e^{z_S^i\cdot q_m/\tau_c}}\]</div>
+        <p>Replacing the temporal negative with random negatives recovers a CRD-style objective, which is what the ablation isolates.</p>
+      </div>
+      <div class="step">
+        <span class="k">Suppress</span>
+        <h4>Shortcut Suppression loss \(\mathcal{L}_{\mathrm{SS}}\)</h4>
+        <p>A batch-level geometric constraint: the normalized student feature is penalized when its projection onto the shortcut subspace exceeds a margin \(\varepsilon\):</p>
+        <div class="eq">\[\mathcal{L}_{\mathrm{SS}} = \frac{1}{B}\sum_{i=1}^{B}\max\!\big(0,\ \lVert \bar{h}_S(x_i)^{\top}\mathbf{U}_K\rVert_2 - \varepsilon\big)\]</div>
+        <p>When \(\mathcal{L}_{\mathrm{SS}}=0\), every student feature is at least \(\arccos(0.1)\approx 84.3^{\circ}\) away from the shortcut subspace.</p>
+      </div>
+    </div>
+
+    <div class="narrow">
+      <h3 class="sub">Training objective</h3>
+      <p>Both auxiliary terms are linearly warmed up, \(\beta(t)=\gamma(t)=\min(t/T_{\mathrm{warmup}},1)\), and combined with cross-entropy and standard logit distillation from \(T_{\mathrm{final}}\):</p>
+      <div class="eq">\[\mathcal{L}_{\mathrm{ASD}} = \mathcal{L}_{\mathrm{CE}} + \alpha_{\mathrm{kd}}\,\mathcal{L}_{\mathrm{KD}} + \beta(t)\,\alpha_{\mathrm{tc}}\,\mathcal{L}_{\mathrm{TC}} + \gamma(t)\,\alpha_{\mathrm{ss}}\,\mathcal{L}_{\mathrm{SS}}\]</div>
+      <p>The two losses complement each other. \(\mathcal{L}_{\mathrm{TC}}\) gives a per-sample, relative push away from the early teacher, but it cannot stop the student from rediscovering shortcut directions from the data. \(\mathcal{L}_{\mathrm{SS}}\) constrains the whole subspace, but it carries no per-sample temporal signal.</p>
+
+      <div class="callout">
+        <b>Why does \(\Delta h\) find shortcuts?</b> Suppose teacher features split into orthogonal robust and shortcut subspaces. If most of the early-to-final change happens in the shortcut subspace, the top-\(K\) eigenspace of \(\mathbb{E}[\Delta h\,\Delta h^{\top}]\) lies entirely in that subspace, and a Davis–Kahan bound controls the error of the mini-batch estimate (Theorem&nbsp;1 in the paper).
+        <div class="hp">
+          <span>T_early = 15% of training</span><span>K = 4</span><span>ε = 0.1</span><span>τ_c = 0.07</span><span>M = 4096</span><span>α_kd = 1.0</span><span>α_tc = 0.8</span><span>α_ss = 1.0</span><span>T_warmup = 20 ep</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub" style="text-align:center">Does the student follow the intended geometry?</h3>
+    <div class="grid-2">
+      <figure class="card">
+        <img src="images/diag-temporal-alignment.jpg" loading="lazy" width="1800" height="693" alt="Histograms of student similarity to the final teacher and to the early teacher; 99.9% of samples are closer to the final teacher.">
+        <figcaption><b>Temporal alignment (\(\mathcal{L}_{\mathrm{TC}}\)).</b> 99.9% of samples are closer to \(T_{\mathrm{final}}\) than to \(T_{\mathrm{early}}\). The binary-diagnostic InfoNCE bound is 0.601 nats, against a ceiling of \(\log 2\approx 0.693\). P1, ResNet-34&rarr;ResNet-18, CIFAR-100.</figcaption>
+      </figure>
+      <figure class="card">
+        <img src="images/diag-shortcut-separation.jpg" loading="lazy" width="1800" height="552" alt="Distribution of cosine similarity between student features and the shortcut direction for KD and ASD, and margin violation rates of 89.0% for KD and 11.7% for ASD.">
+        <figcaption><b>Shortcut-direction separation (\(\mathcal{L}_{\mathrm{SS}}\)).</b> The ASD student is <em>anti</em>-aligned with \(\Delta h\): mean \(\cos(h_S,\Delta h) = -0.361\), against 0.003 for KD. 89.0% of KD samples fall on the shortcut-aligned side of the diagnostic threshold, against 11.7% for ASD.</figcaption>
+      </figure>
+    </div>
+    <figure class="card" style="margin-top:18px">
+      <img src="images/diag-subspace-geometry.jpg" loading="lazy" width="1800" height="537" alt="Principal angles between shortcut, robust and early subspaces; student-shortcut cosine; and student projection onto the robust subspace, which is 0.45 for ASD and 0.12 for KD.">
+      <figcaption><b>Subspace geometry.</b> The shortcut subspace is 65.3&deg; from the \(T_{\mathrm{final}}\) robust subspace but only 38.6&deg; from the \(T_{\mathrm{early}}\) subspace, as Theorem&nbsp;1 predicts. ASD students project far more strongly onto the robust subspace (0.45 vs. 0.12 for KD), so clean accuracy and robustness improve together.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <h2 class="section-title">Results</h2>
+
+    <div class="stats">
+      <div class="stat"><div class="num">10<small>+</small> / 13</div><div class="lbl">teacher–student pairs with the best clean top-1 accuracy</div></div>
+      <div class="stat"><div class="num">12 / 13</div><div class="lbl">pairs where ASD outperforms standard KD</div></div>
+      <div class="stat"><div class="num">86.1</div><div class="lbl">lowest mCE on CIFAR-100-C for WRN-40-2&rarr;ShuffleNet-V2</div></div>
+      <div class="stat"><div class="num">38.87</div><div class="lbl">ADE20K mIoU with a ResNet-18 student (+1.98 over UFD-KD)</div></div>
+    </div>
+
+    <h3 class="sub">Image classification</h3>
+    <p>Top-1 accuracy (%) over 13 teacher–student pairs, mean ± std over 3 seeds. All methods share the optimizer, schedule, augmentation and training budget. <span style="color:var(--accent);font-weight:600">Underlined</span> = best in column.</p>
+
+    <div class="tabs" role="tablist" data-group="cls">
+      <button class="tab" role="tab" aria-selected="true" aria-controls="p-cross" id="t-cross">Cross-architecture (P6–P10)</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-same" id="t-same">Same-family (P1–P5)</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-beyond" id="t-beyond">ImageNet-100 &amp; TinyImageNet (P11–P13)</button>
+    </div>
+
+    <div class="panel" id="p-cross" role="tabpanel" aria-labelledby="t-cross">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Teacher<br>Student</th>
+          <th>WRN-40-2<span class="pair">ShuffleNet-V2</span></th>
+          <th>WRN-40-2<span class="pair">ShuffleNet-V1</span></th>
+          <th>ResNet-32×4<span class="pair">ShuffleNet-V1</span></th>
+          <th>ResNet-32×4<span class="pair">ShuffleNet-V2</span></th>
+          <th>VGG-13<span class="pair">MobileNet-V2</span></th></tr></thead>
+        <tbody>
+          <tr class="ref"><td>Teacher</td><td>76.49</td><td>76.49</td><td>79.72</td><td>79.72</td><td>76.15</td></tr>
+          <tr class="ref"><td>Student (CE only)</td><td>63.26<span class="sd">±0.27</span></td><td>71.46<span class="sd">±0.38</span></td><td>71.46<span class="sd">±0.38</span></td><td>63.26<span class="sd">±0.27</span></td><td>64.12<span class="sd">±0.31</span></td></tr>
+          <tr><td>KD</td><td>66.72<span class="sd">±0.32</span></td><td>73.79<span class="sd">±0.26</span></td><td>73.09<span class="sd">±0.38</span></td><td>66.17<span class="sd">±0.18</span></td><td>65.86<span class="sd">±0.28</span></td></tr>
+          <tr><td>FitNets</td><td>67.07<span class="sd">±0.15</span></td><td>74.27<span class="sd">±0.04</span></td><td>73.20<span class="sd">±0.50</span></td><td>66.07<span class="sd">±0.36</span></td><td>66.18<span class="sd">±0.22</span></td></tr>
+          <tr><td>AT</td><td>67.66<span class="sd">±0.19</span></td><td>73.97<span class="sd">±0.21</span></td><td>73.25<span class="sd">±0.28</span></td><td>66.28<span class="sd">±0.24</span></td><td>66.38<span class="sd">±0.19</span></td></tr>
+          <tr><td>DKD</td><td>66.84<span class="sd">±0.31</span></td><td>73.63<span class="sd">±0.39</span></td><td>72.33<span class="sd">±0.33</span></td><td>66.42<span class="sd">±0.28</span></td><td>66.02<span class="sd">±0.24</span></td></tr>
+          <tr><td>CRD</td><td>67.81<span class="sd">±0.42</span></td><td>74.34<span class="sd">±0.47</span></td><td>73.60<span class="sd">±0.16</span></td><td>66.98<span class="sd">±0.36</span></td><td>66.64<span class="sd">±0.31</span></td></tr>
+          <tr><td>CkptKD</td><td>67.27<span class="sd">±0.03</span></td><td>72.66<span class="sd">±0.20</span></td><td>73.39<span class="sd">±0.01</span></td><td>66.52<span class="sd">±0.08</span></td><td>66.08<span class="sd">±0.14</span></td></tr>
+          <tr class="ours"><td>ASD (ours)</td><td class="best">68.05<span class="sd">±0.14</span></td><td class="best">74.94<span class="sd">±0.09</span></td><td class="best">73.98<span class="sd">±0.27</span></td><td class="best">67.18<span class="sd">±0.19</span></td><td class="best">67.02<span class="sd">±0.18</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="tnote">ASD is best on all five heterogeneous pairs. The largest gain over KD is on WRN-40-2&rarr;ShuffleNet-V2 (+1.33&nbsp;pp). When teacher and student have different representational bases, push–pull supervision matters most.</p>
+    </div>
+
+    <div class="panel" id="p-same" role="tabpanel" aria-labelledby="t-same" hidden>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Teacher<br>Student</th>
+          <th>ResNet-34<span class="pair">ResNet-18</span></th>
+          <th>WRN-40-2<span class="pair">WRN-16-2</span></th>
+          <th>ResNet-32×4<span class="pair">ResNet-8×4</span></th>
+          <th>WRN-40-2<span class="pair">WRN-40-1</span></th>
+          <th>VGG-13<span class="pair">VGG-8</span></th></tr></thead>
+        <tbody>
+          <tr class="ref"><td>Teacher</td><td>79.91</td><td>76.49</td><td>79.72</td><td>76.49</td><td>76.15</td></tr>
+          <tr class="ref"><td>Student</td><td>78.79</td><td>73.33</td><td>71.90</td><td>71.49</td><td>71.10</td></tr>
+          <tr><td>KD</td><td>80.22<span class="sd">±0.19</span></td><td>74.74<span class="sd">±0.17</span></td><td>73.32<span class="sd">±0.11</span></td><td>73.38<span class="sd">±0.47</span></td><td>73.68<span class="sd">±0.35</span></td></tr>
+          <tr><td>FitNets</td><td>80.32<span class="sd">±0.17</span></td><td>74.94<span class="sd">±0.24</span></td><td>73.55<span class="sd">±0.04</span></td><td>73.54<span class="sd">±0.18</span></td><td>73.91<span class="sd">±0.11</span></td></tr>
+          <tr><td>AT</td><td>80.30<span class="sd">±0.12</span></td><td>74.99<span class="sd">±0.15</span></td><td class="best">73.78<span class="sd">±0.15</span></td><td>73.79<span class="sd">±0.16</span></td><td>71.61<span class="sd">±0.12</span></td></tr>
+          <tr><td>DKD</td><td>80.04<span class="sd">±0.36</span></td><td>75.08<span class="sd">±0.14</span></td><td>73.69<span class="sd">±0.32</span></td><td>73.63<span class="sd">±0.07</span></td><td>73.99<span class="sd">±0.05</span></td></tr>
+          <tr><td>CRD</td><td class="best">80.71<span class="sd">±0.34</span></td><td>74.76<span class="sd">±0.12</span></td><td>73.15<span class="sd">±0.12</span></td><td>73.63<span class="sd">±0.33</span></td><td>74.04<span class="sd">±0.18</span></td></tr>
+          <tr><td>CkptKD</td><td>73.94<span class="sd">±0.13</span></td><td>71.31<span class="sd">±0.06</span></td><td>72.17<span class="sd">±0.15</span></td><td>70.65<span class="sd">±0.15</span></td><td>70.48<span class="sd">±0.12</span></td></tr>
+          <tr class="ours"><td>ASD (ours)</td><td>80.50<span class="sd">±0.07</span></td><td class="best">75.87<span class="sd">±0.29</span></td><td>73.13<span class="sd">±0.12</span></td><td class="best">74.16<span class="sd">±0.21</span></td><td class="best">74.26<span class="sd">±0.13</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="tnote">ASD improves over KD on 4 of 5 same-family pairs. On ResNet-34&rarr;ResNet-18, CRD is 0.21&nbsp;pp higher but with almost 5× the seed variance. ResNet-32×4&rarr;ResNet-8×4 is the capacity boundary: a student this heavily compressed still needs some low-level cues.</p>
+    </div>
+
+    <div class="panel" id="p-beyond" role="tabpanel" aria-labelledby="t-beyond" hidden>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Teacher &rarr; Student<br>Dataset</th>
+          <th>ResNet-50 &rarr; MobileNet-V2<span class="pair">ImageNet-100</span></th>
+          <th>ResNet-34 &rarr; ResNet-18<span class="pair">TinyImageNet</span></th>
+          <th>ResNet-50 &rarr; ResNet-18<span class="pair">ImageNet-100</span></th></tr></thead>
+        <tbody>
+          <tr class="ref"><td>Teacher</td><td>85.30</td><td>43.14</td><td>85.30</td></tr>
+          <tr class="ref"><td>Student (CE only)</td><td>80.21<span class="sd">±0.07</span></td><td>42.98<span class="sd">±0.46</span></td><td>83.85<span class="sd">±0.15</span></td></tr>
+          <tr><td>KD</td><td>82.43<span class="sd">±0.41</span></td><td>44.36<span class="sd">±1.23</span></td><td>84.72<span class="sd">±0.35</span></td></tr>
+          <tr><td>FitNets</td><td>82.51<span class="sd">±0.30</span></td><td>44.58<span class="sd">±0.83</span></td><td>84.88<span class="sd">±0.22</span></td></tr>
+          <tr><td>AT</td><td>82.90<span class="sd">±0.30</span></td><td>44.42<span class="sd">±0.91</span></td><td>84.92<span class="sd">±0.26</span></td></tr>
+          <tr><td>DKD</td><td>82.54<span class="sd">±0.18</span></td><td>45.44<span class="sd">±1.11</span></td><td>84.85<span class="sd">±0.18</span></td></tr>
+          <tr><td>CRD</td><td>83.01<span class="sd">±0.18</span></td><td>45.02<span class="sd">±1.08</span></td><td>85.24<span class="sd">±0.19</span></td></tr>
+          <tr><td>CkptKD</td><td>82.70<span class="sd">±0.30</span></td><td>44.75<span class="sd">±1.02</span></td><td>84.80<span class="sd">±0.28</span></td></tr>
+          <tr class="ours"><td>ASD (ours)</td><td class="best">83.24<span class="sd">±0.13</span></td><td class="best">46.00<span class="sd">±1.45</span></td><td class="best">85.48<span class="sd">±0.15</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="tnote">The temporal shortcut signal still helps at higher resolution and with more classes: ASD is best on all three pairs. On TinyImageNet it beats CRD on 3 of 3 paired seeds (+0.62, +1.14, +1.18&nbsp;pp).</p>
+    </div>
+
+    <h3 class="sub">Corruption robustness on CIFAR-100-C</h3>
+    <p>Mean Corruption Error (mCE, %, <b>lower is better</b>) across all 15 corruption types at severity 5.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Teacher<br>Student</th>
+        <th>ResNet-34<span class="pair">ResNet-18</span></th>
+        <th>WRN-40-2<span class="pair">WRN-16-2</span></th>
+        <th>ResNet-32×4<span class="pair">ResNet-8×4</span></th>
+        <th>WRN-40-2<span class="pair">WRN-40-1</span></th>
+        <th>VGG-13<span class="pair">VGG-8</span></th>
+        <th>WRN-40-2<span class="pair">ShuffleNet-V2</span></th></tr></thead>
+      <tbody>
+        <tr class="ref"><td>CE only</td><td>87.0<span class="sd">±0.3</span></td><td>95.9<span class="sd">±0.2</span></td><td>99.6<span class="sd">±0.4</span></td><td>93.7<span class="sd">±0.4</span></td><td>87.0<span class="sd">±0.3</span></td><td>88.5<span class="sd">±0.4</span></td></tr>
+        <tr><td>KD</td><td>86.2<span class="sd">±0.4</span></td><td>93.7<span class="sd">±0.4</span></td><td>98.1<span class="sd">±0.3</span></td><td>92.2<span class="sd">±0.6</span></td><td>85.6<span class="sd">±0.3</span></td><td>86.9<span class="sd">±0.4</span></td></tr>
+        <tr><td>FitNets</td><td>86.0<span class="sd">±0.4</span></td><td>93.6<span class="sd">±0.1</span></td><td>98.0<span class="sd">±0.3</span></td><td>92.1<span class="sd">±0.3</span></td><td>85.5<span class="sd">±0.2</span></td><td>86.8<span class="sd">±0.3</span></td></tr>
+        <tr><td>AT</td><td>85.7<span class="sd">±0.6</span></td><td>93.6<span class="sd">±0.5</span></td><td>97.8<span class="sd">±0.5</span></td><td>92.0<span class="sd">±0.4</span></td><td>85.5<span class="sd">±0.3</span></td><td>87.4<span class="sd">±0.2</span></td></tr>
+        <tr><td>DKD</td><td>85.9<span class="sd">±0.9</span></td><td class="best">93.4<span class="sd">±0.3</span></td><td>97.5<span class="sd">±0.2</span></td><td>92.4<span class="sd">±0.3</span></td><td>85.5<span class="sd">±0.1</span></td><td>87.4<span class="sd">±0.5</span></td></tr>
+        <tr><td>CRD</td><td class="best">85.2<span class="sd">±0.6</span></td><td>93.8<span class="sd">±0.3</span></td><td>98.2<span class="sd">±0.1</span></td><td>92.7<span class="sd">±0.6</span></td><td>85.9<span class="sd">±0.5</span></td><td>86.7<span class="sd">±0.3</span></td></tr>
+        <tr><td>CkptKD</td><td>90.9<span class="sd">±0.1</span></td><td>99.1<span class="sd">±0.2</span></td><td class="best">96.6<span class="sd">±0.2</span></td><td>98.7<span class="sd">±0.2</span></td><td>90.0<span class="sd">±0.2</span></td><td>92.2<span class="sd">±0.1</span></td></tr>
+        <tr class="ours"><td>ASD (ours)</td><td>85.6<span class="sd">±0.4</span></td><td>94.2<span class="sd">±0.4</span></td><td>97.9<span class="sd">±0.2</span></td><td class="best">91.7<span class="sd">±0.4</span></td><td class="best">85.2<span class="sd">±0.3</span></td><td class="best">86.1<span class="sd">±0.4</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="tnote">ASD has the lowest mCE on WRN-40-2&rarr;WRN-40-1, VGG-13&rarr;VGG-8 and the hardest cross-architecture pair, WRN-40-2&rarr;ShuffleNet-V2. CkptKD uses the same early checkpoint as an <em>attractive</em> teacher and loses robustness on five of six pairs. ASD uses it in the opposite direction.</p>
+
+    <h3 class="sub">Semantic segmentation on ADE20K</h3>
+    <p>Both ASD losses act on penultimate features, so they extend to dense prediction unchanged. They are applied to the DeepLabv3 backbone feature map, with each spatial location treated as a sample. Setup: ResNet-101 teacher, 512×512 inputs, 40k iterations.</p>
+    <div class="table-wrap"><table>
+      <thead>
+        <tr><th rowspan="2">Teacher &rarr; Student</th><th colspan="2">From scratch</th><th colspan="2">KD</th><th colspan="2">Af-DCD</th><th>UFD-KD</th><th colspan="2">ASD (ours)</th></tr>
+        <tr><th>T. mIoU</th><th>S. mIoU</th><th>pixAcc</th><th>mIoU</th><th>pixAcc</th><th>mIoU</th><th>mIoU</th><th>pixAcc</th><th>mIoU</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ResNet-101 &rarr; ResNet-18</td><td>42.70</td><td>33.91</td><td>76.32</td><td>34.88</td><td>77.43</td><td>36.21</td><td>36.89</td><td style="background:var(--accent-soft)">78.92</td><td class="best" style="background:var(--accent-soft)">38.87</td></tr>
+        <tr><td>ResNet-101 &rarr; MobileNetV2</td><td>42.70</td><td>34.32</td><td>76.74</td><td>34.92</td><td>77.28</td><td>35.97</td><td>36.24</td><td style="background:var(--accent-soft)">78.65</td><td class="best" style="background:var(--accent-soft)">37.91</td></tr>
+      </tbody>
+    </table></div>
+    <p class="tnote">ASD reaches 38.87 mIoU with a ResNet-18 student (+1.98 over UFD-KD, +3.99 over from scratch) and 37.91 mIoU with MobileNetV2 (+1.67 over UFD-KD).</p>
+
+    <div class="qual-nav tabs" role="tablist" data-group="qual" style="margin-top:28px">
+      <button class="tab" role="tab" aria-selected="true" aria-controls="q1" id="tq1">1</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="q2" id="tq2">2</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="q3" id="tq3">3</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="q4" id="tq4">4</button>
+    </div>
+    <figure class="card">
+      <div class="panel" id="q1" role="tabpanel" aria-labelledby="tq1"><img src="images/ade20k-qualitative-1.jpg" loading="lazy" width="1600" height="1338" alt="ADE20K qualitative results set 1: input, ground truth, ResNet-101 teacher, KD ResNet-18 student and ASD ResNet-18 student segmentation masks."></div>
+      <div class="panel" id="q2" role="tabpanel" aria-labelledby="tq2" hidden><img src="images/ade20k-qualitative-2.jpg" loading="lazy" width="1600" height="1338" alt="ADE20K qualitative results set 2."></div>
+      <div class="panel" id="q3" role="tabpanel" aria-labelledby="tq3" hidden><img src="images/ade20k-qualitative-3.jpg" loading="lazy" width="1600" height="1338" alt="ADE20K qualitative results set 3."></div>
+      <div class="panel" id="q4" role="tabpanel" aria-labelledby="tq4" hidden><img src="images/ade20k-qualitative-4.jpg" loading="lazy" width="1600" height="1338" alt="ADE20K qualitative results set 4."></div>
+      <figcaption><b>Qualitative segmentation on ADE20K.</b> Columns: input, ground truth, ResNet-101 teacher, KD student (ResNet-18), ASD student (ResNet-18). The ASD student produces cleaner masks and sharper object boundaries, closer to the teacher. Use the buttons above to switch between example sets.</figcaption>
+    </figure>
+
+    <figure class="card" style="margin-top:18px">
+      <img src="images/ade20k-tsne.jpg" loading="lazy" width="1400" height="1303" alt="t-SNE of penultimate features for the first 50 ADE20K classes: KD student clusters are scattered, while ASD student clusters closely match the teacher.">
+      <figcaption><b>Feature geometry on ADE20K.</b> t-SNE of penultimate features for the first 50 classes. The KD student scatters the teacher's class structure, while the ASD student forms tight, well-separated clusters that closely match the teacher's layout.</figcaption>
+    </figure>
+
+    <h3 class="sub">Ablation: both losses matter</h3>
+    <div class="grid-2">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Method (P1)</th><th>Clean Acc (%) ↑</th><th>mCE (%) ↓</th></tr></thead>
+        <tbody>
+          <tr><td>KD</td><td>80.22<span class="sd">±0.19</span></td><td>86.2<span class="sd">±0.4</span></td></tr>
+          <tr><td>ASD w/o \(\mathcal{L}_{\mathrm{SS}}\)</td><td>80.19<span class="sd">±0.07</span></td><td>85.8<span class="sd">±0.7</span></td></tr>
+          <tr><td>ASD w/o \(\mathcal{L}_{\mathrm{TC}}\)</td><td>80.15<span class="sd">±0.19</span></td><td>85.9<span class="sd">±0.4</span></td></tr>
+          <tr class="ours"><td>ASD (full)</td><td class="best">80.50<span class="sd">±0.07</span></td><td class="best">85.6<span class="sd">±0.4</span></td></tr>
+        </tbody>
+      </table></div>
+      <div>
+        <p>On P1 (ResNet-34&rarr;ResNet-18, CIFAR-100), either loss alone improves robustness over KD, but neither alone improves clean accuracy. Only the combination improves both.</p>
+        <p>Replacing the same-sample temporal negative with random in-batch negatives turns \(\mathcal{L}_{\mathrm{TC}}\) into a CRD-style loss. Using \(T_{\mathrm{early}}\) as the negative wins on 4 of 5 pairs, by up to +1.33&nbsp;pp on WRN-40-2&rarr;ShuffleNet-V2.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BIBTEX ================= -->
+<section id="bibtex">
+  <div class="wrap narrow">
+    <h2 class="section-title">BibTeX</h2>
+    <div class="bib">
+      <button class="copy" type="button" id="copy-bib" aria-label="Copy BibTeX to clipboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>Copy</span>
+      </button>
+<pre id="bib-text">@inproceedings{raza2026asd,
+  title     = {Anti-Shortcut Distillation via Temporal Negative
+               Knowledge Transfer},
+  author    = {Raza, Syed Muhammad and Tariq, Omer and Son, Jeongbae},
+  booktitle = {British Machine Vision Conference (BMVC)},
+  year      = {2026}
+}</pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>This work was supported by an IITP grant funded by the Korea government (MSIT) (No. RS-2024-00443391).</p>
+    <p><a href="/">&larr; Back to Syed Muhammad Raza's homepage</a></p>
+  </div>
+</footer>
+
+<script>
+// Render LaTeX with KaTeX once the deferred scripts have loaded.
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.renderMathInElement) {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "\\[", right: "\\]", display: true },
+        { left: "\\(", right: "\\)", display: false }
+      ],
+      throwOnError: false
+    });
+  }
+});
+
+// Tab groups: results tables and qualitative examples.
+document.querySelectorAll(".tabs[data-group]").forEach(function (group) {
+  var tabs = group.querySelectorAll(".tab");
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+      });
+    });
+  });
+});
+
+// Copy BibTeX.
+document.getElementById("copy-bib").addEventListener("click", function () {
+  var btn = this, label = btn.querySelector("span");
+  var text = document.getElementById("bib-text").textContent;
+  function done() {
+    btn.classList.add("done"); label.textContent = "Copied!";
+    setTimeout(function () { btn.classList.remove("done"); label.textContent = "Copy"; }, 1800);
+  }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done);
+  } else {
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+});
+</script>
+</body>
+</html>
