@@ -209,7 +209,7 @@ footer p+p{margin-top:6px}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         Supplementary
       </a>
-      <a class="btn" href="https://github.com/SMRaza1009/ASD-Anti-Shortcut-Distillation-via-Temporal-Negative-Knowledge-Transfer-" target="_blank" rel="noopener">
+      <a class="btn" href="https://github.com/SMRaza1009/ASD-Anti-Shortcut-Distillation" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
         Code
       </a>
@@ -225,7 +225,7 @@ footer p+p{margin-top:6px}
     <figure class="card">
       <a href="images/asd-pipeline.jpg" target="_blank" rel="noopener"><img src="images/asd-pipeline.jpg" width="2200" height="1162" alt="ASD pipeline: an input image passes through a trainable student, a frozen final teacher and a frozen early teacher. The temporal contrastive loss pulls the student toward the final teacher and pushes it away from the early teacher; the shortcut suppression loss penalizes the student's projection onto the top eigenvectors of the early-to-final feature displacement."></a>
       <figcaption>
-        <b>The push–pull idea behind ASD.</b> Standard distillation only <em>pulls</em> a student toward a converged teacher. ASD also tells the student what to <em>avoid</em>, using a free by-product of teacher training: an early checkpoint \(T_{\mathrm{early}}\), which still relies on texture, background and colour shortcuts. A three-way forward pass extracts features from the student, the frozen converged teacher \(T_{\mathrm{final}}\) and the frozen \(T_{\mathrm{early}}\). The <b>Temporal Contrastive loss</b> pulls the student toward \(T_{\mathrm{final}}\) and pushes it away from \(T_{\mathrm{early}}\) for the same image. The <b>Shortcut Suppression loss</b> penalizes the student's projection onto the principal shortcut subspace of \(\Delta h = h_{\mathrm{early}} - h_{\mathrm{final}}\).
+        <b>The push–pull idea behind ASD.</b> Standard distillation only <em>pulls</em> a student toward a converged teacher. ASD also tells the student what to <em>avoid</em>, using a free by-product of teacher training: an early checkpoint \(T_{\mathrm{early}}\), whose features tend to retain texture, background and colour shortcuts. A three-way forward pass extracts features from the student, the frozen converged teacher \(T_{\mathrm{final}}\) and the frozen \(T_{\mathrm{early}}\). The <b>Temporal Contrastive loss</b> pulls the student toward \(T_{\mathrm{final}}\) and pushes it away from \(T_{\mathrm{early}}\) for the same image. The <b>Shortcut Suppression loss</b> penalizes the student's projection onto the principal shortcut subspace of \(\Delta h = h_{\mathrm{early}} - h_{\mathrm{final}}\). In the figure, \(V_k\) denotes this subspace \(\mathbf{U}_K\); the bottom row is a schematic illustration, not a result.
       </figcaption>
     </figure>
   </div>
@@ -247,7 +247,7 @@ footer p+p{margin-top:6px}
     <h2 class="section-title">Method</h2>
     <div class="narrow">
       <p>
-        Networks pick up easy cues such as local texture, colour statistics and background early in training, and only later settle on shape-biased, semantically stable features. A converged teacher records where that process ended, but not the shortcut directions it passed through and then attenuated. ASD turns this trajectory into supervision. Two frozen snapshots of the <em>same</em> teacher are kept: the converged \(T_{\mathrm{final}}\) (what to imitate) and an early checkpoint \(T_{\mathrm{early}}\), taken at 15% of training (what to avoid). Only the student, plus a small projector when feature sizes differ, is trained. The projector is discarded at inference.
+        Networks tend to pick up easy cues such as local texture, colour statistics and background early in training, and only later settle on shape-biased, semantically stable features. A converged teacher records where that process ended, but not the shortcut directions it passed through and then attenuated. ASD turns this trajectory into supervision. Two frozen snapshots of the <em>same</em> teacher are kept: the converged \(T_{\mathrm{final}}\) (what to imitate) and an early checkpoint \(T_{\mathrm{early}}\), taken at 15% of training (what to avoid). Only the student, plus a small projector when feature sizes differ, is trained. The projector is discarded at inference.
       </p>
     </div>
 
@@ -264,7 +264,7 @@ footer p+p{margin-top:6px}
         <h4>Temporal Contrastive loss \(\mathcal{L}_{\mathrm{TC}}\)</h4>
         <p>An InfoNCE objective in which the final-teacher feature is the positive and the <em>same image's</em> early-teacher feature is an explicit negative, alongside in-batch and memory-bank \(T_{\mathrm{final}}\) negatives:</p>
         <div class="eq">\[\mathcal{L}_{\mathrm{TC}}^{(i)} = -\log \frac{e^{z_S^i\cdot z_F^i/\tau_c}}{e^{z_S^i\cdot z_F^i/\tau_c} + \underbrace{e^{z_S^i\cdot z_E^i/\tau_c}}_{\text{temporal neg.}} + \sum_{j\neq i} e^{z_S^i\cdot z_F^j/\tau_c} + \sum_{m} e^{z_S^i\cdot q_m/\tau_c}}\]</div>
-        <p>Replacing the temporal negative with random negatives recovers a CRD-style objective, which is what the ablation isolates.</p>
+        <p>Replacing the temporal negative with random in-batch negatives recovers a CRD-style objective; the temporal negative is what distinguishes ASD.</p>
       </div>
       <div class="step">
         <span class="k">Suppress</span>
@@ -280,6 +280,8 @@ footer p+p{margin-top:6px}
       <p>Both auxiliary terms are linearly warmed up, \(\beta(t)=\gamma(t)=\min(t/T_{\mathrm{warmup}},1)\), and combined with cross-entropy and standard logit distillation from \(T_{\mathrm{final}}\):</p>
       <div class="eq">\[\mathcal{L}_{\mathrm{ASD}} = \mathcal{L}_{\mathrm{CE}} + \alpha_{\mathrm{kd}}\,\mathcal{L}_{\mathrm{KD}} + \beta(t)\,\alpha_{\mathrm{tc}}\,\mathcal{L}_{\mathrm{TC}} + \gamma(t)\,\alpha_{\mathrm{ss}}\,\mathcal{L}_{\mathrm{SS}}\]</div>
       <p>The two losses complement each other. \(\mathcal{L}_{\mathrm{TC}}\) gives a per-sample, relative push away from the early teacher, but it cannot stop the student from rediscovering shortcut directions from the data. \(\mathcal{L}_{\mathrm{SS}}\) constrains the whole subspace, but it carries no per-sample temporal signal.</p>
+      <p><b>Cost.</b> ASD stores one extra frozen checkpoint and adds one \(T_{\mathrm{early}}\) forward pass per step and a per-batch eigendecomposition, roughly 15–20% more training time than standard KD. The projector is dropped, so inference cost is unchanged.</p>
+      <p><b>Limitations.</b> ASD is below KD on ResNet-32×4&rarr;ResNet-8×4 (73.13 vs 73.32) and has higher mCE than KD on WRN-40-2&rarr;WRN-16-2 (94.2 vs 93.7).</p>
 
       <div class="callout">
         <b>Why does \(\Delta h\) find shortcuts?</b> Suppose teacher features split into orthogonal robust and shortcut subspaces. If most of the early-to-final change happens in the shortcut subspace, the top-\(K\) eigenspace of \(\mathbb{E}[\Delta h\,\Delta h^{\top}]\) lies entirely in that subspace, and a Davis–Kahan bound controls the error of the mini-batch estimate (Theorem&nbsp;4 in the paper).
@@ -313,7 +315,7 @@ footer p+p{margin-top:6px}
     <h2 class="section-title">Results</h2>
 
     <div class="stats">
-      <div class="stat"><div class="num">10<small>+</small> / 13</div><div class="lbl">teacher–student pairs with the best clean top-1 accuracy</div></div>
+      <div class="stat"><div class="num">11 / 13</div><div class="lbl">teacher–student pairs with the best clean top-1 accuracy</div></div>
       <div class="stat"><div class="num">12 / 13</div><div class="lbl">pairs where ASD outperforms standard KD</div></div>
       <div class="stat"><div class="num">86.1</div><div class="lbl">lowest mCE on CIFAR-100-C for WRN-40-2&rarr;ShuffleNet-V2</div></div>
       <div class="stat"><div class="num">38.87</div><div class="lbl">ADE20K mIoU with a ResNet-18 student (+1.98 over UFD-KD)</div></div>
@@ -376,7 +378,7 @@ footer p+p{margin-top:6px}
           <tr class="ours"><td>ASD (ours)</td><td>80.50<span class="sd">±0.07</span></td><td class="best">75.87<span class="sd">±0.29</span></td><td>73.13<span class="sd">±0.12</span></td><td class="best">74.16<span class="sd">±0.21</span></td><td class="best">74.26<span class="sd">±0.13</span></td></tr>
         </tbody>
       </table></div>
-      <p class="tnote">ASD improves over KD on 4 of 5 same-family pairs. On ResNet-34&rarr;ResNet-18, CRD is 0.21&nbsp;pp higher but with almost 5× the seed variance. ResNet-32×4&rarr;ResNet-8×4 is the capacity boundary: a student this heavily compressed still needs some low-level cues.</p>
+      <p class="tnote">ASD improves over KD on 4 of 5 same-family pairs. On ResNet-34&rarr;ResNet-18, CRD is 0.21&nbsp;pp higher, with almost 5× the seed standard deviation (±0.34 vs ±0.07). ResNet-32×4&rarr;ResNet-8×4 is the one pair where ASD is below KD (73.13 vs 73.32); for such aggressive compression, some low-level cues may serve as necessary scaffolding rather than shortcuts.</p>
     </div>
 
     <div class="panel" id="p-beyond" role="tabpanel" aria-labelledby="t-beyond" hidden>
@@ -538,26 +540,6 @@ footer p+p{margin-top:6px}
       <p class="tnote">Hyperparameter sweeps from the supplementary (mean of 3 seeds).</p>
     </div>
 
-    <h3 class="sub">Qualitative results on ADE20K</h3>
-
-    <div class="qual-nav tabs" role="tablist" data-group="qual" style="margin-top:28px">
-      <button class="tab" role="tab" aria-selected="true" aria-controls="q1" id="tq1">1</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="q2" id="tq2">2</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="q3" id="tq3">3</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="q4" id="tq4">4</button>
-    </div>
-    <figure class="card">
-      <div class="panel" id="q1" role="tabpanel" aria-labelledby="tq1"><img src="images/ade20k-qualitative-1.jpg" loading="lazy" width="1600" height="1338" alt="ADE20K qualitative results set 1: input, ground truth, ResNet-101 teacher, KD ResNet-18 student and ASD ResNet-18 student segmentation masks."></div>
-      <div class="panel" id="q2" role="tabpanel" aria-labelledby="tq2" hidden><img src="images/ade20k-qualitative-2.jpg" loading="lazy" width="1600" height="1338" alt="ADE20K qualitative results set 2."></div>
-      <div class="panel" id="q3" role="tabpanel" aria-labelledby="tq3" hidden><img src="images/ade20k-qualitative-3.jpg" loading="lazy" width="1600" height="1338" alt="ADE20K qualitative results set 3."></div>
-      <div class="panel" id="q4" role="tabpanel" aria-labelledby="tq4" hidden><img src="images/ade20k-qualitative-4.jpg" loading="lazy" width="1600" height="1338" alt="ADE20K qualitative results set 4."></div>
-      <figcaption><b>Qualitative segmentation on ADE20K.</b> Columns: input, ground truth, ResNet-101 teacher, KD student (ResNet-18), ASD student (ResNet-18). The ASD student produces cleaner masks and sharper object boundaries, closer to the teacher. Use the buttons above to switch between example sets.</figcaption>
-    </figure>
-
-    <figure class="card" style="margin-top:18px">
-      <img src="images/ade20k-tsne.jpg" loading="lazy" width="1400" height="1303" alt="t-SNE of penultimate features for the first 50 ADE20K classes: KD student clusters are scattered, while ASD student clusters closely match the teacher.">
-      <figcaption><b>Feature geometry on ADE20K.</b> t-SNE of penultimate features for the first 50 classes. The KD student scatters the teacher's class structure, while the ASD student forms tight, well-separated clusters that closely match the teacher's layout.</figcaption>
-    </figure>
   </div>
 </section>
 
@@ -585,7 +567,7 @@ footer p+p{margin-top:6px}
 
 <footer>
   <div class="wrap">
-    <p>This work was supported by an IITP grant funded by the Korea government (MSIT) (No. RS-2024-00443391).</p>
+    <p>This work was supported by an Institute of Information and communications Technology Planning and Evaluation (IITP) grant funded by the Korea government (MSIT) (No. RS-2024-00443391, Korea-Japan Joint International Research on Deep Learning-based Autonomous Mobility Control Technology for Autonomous Mobile Robots).</p>
     <p><a href="/">&larr; Back to Syed Muhammad Raza's homepage</a></p>
   </div>
 </footer>
