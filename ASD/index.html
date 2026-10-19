@@ -282,7 +282,7 @@ footer p+p{margin-top:6px}
       <p>The two losses complement each other. \(\mathcal{L}_{\mathrm{TC}}\) gives a per-sample, relative push away from the early teacher, but it cannot stop the student from rediscovering shortcut directions from the data. \(\mathcal{L}_{\mathrm{SS}}\) constrains the whole subspace, but it carries no per-sample temporal signal.</p>
 
       <div class="callout">
-        <b>Why does \(\Delta h\) find shortcuts?</b> Suppose teacher features split into orthogonal robust and shortcut subspaces. If most of the early-to-final change happens in the shortcut subspace, the top-\(K\) eigenspace of \(\mathbb{E}[\Delta h\,\Delta h^{\top}]\) lies entirely in that subspace, and a Davis–Kahan bound controls the error of the mini-batch estimate (Theorem&nbsp;1 in the paper).
+        <b>Why does \(\Delta h\) find shortcuts?</b> Suppose teacher features split into orthogonal robust and shortcut subspaces. If most of the early-to-final change happens in the shortcut subspace, the top-\(K\) eigenspace of \(\mathbb{E}[\Delta h\,\Delta h^{\top}]\) lies entirely in that subspace, and a Davis–Kahan bound controls the error of the mini-batch estimate (Theorem&nbsp;4 in the paper).
         <div class="hp">
           <span>T_early = 15% of training</span><span>K = 4</span><span>ε = 0.1</span><span>τ_c = 0.07</span><span>M = 4096</span><span>α_kd = 1.0</span><span>α_tc = 0.8</span><span>α_ss = 1.0</span><span>T_warmup = 20 ep</span>
         </div>
@@ -302,7 +302,7 @@ footer p+p{margin-top:6px}
     </div>
     <figure class="card" style="margin-top:18px">
       <img src="images/diag-subspace-geometry.jpg" loading="lazy" width="1800" height="537" alt="Principal angles between shortcut, robust and early subspaces; student-shortcut cosine; and student projection onto the robust subspace, which is 0.45 for ASD and 0.12 for KD.">
-      <figcaption><b>Subspace geometry.</b> The shortcut subspace is 65.3&deg; from the \(T_{\mathrm{final}}\) robust subspace but only 38.6&deg; from the \(T_{\mathrm{early}}\) subspace, as Theorem&nbsp;1 predicts. ASD students project far more strongly onto the robust subspace (0.45 vs. 0.12 for KD), so clean accuracy and robustness improve together.</figcaption>
+      <figcaption><b>Subspace geometry.</b> The shortcut subspace is 65.3&deg; from the \(T_{\mathrm{final}}\) robust subspace but only 38.6&deg; from the \(T_{\mathrm{early}}\) subspace, as Theorem&nbsp;4 predicts. ASD students project far more strongly onto the robust subspace (0.45 vs. 0.12 for KD), so clean accuracy and robustness improve together.</figcaption>
     </figure>
   </div>
 </section>
