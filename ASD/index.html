@@ -319,13 +319,18 @@ footer p+p{margin-top:6px}
       <div class="stat"><div class="num">38.87</div><div class="lbl">ADE20K mIoU with a ResNet-18 student (+1.98 over UFD-KD)</div></div>
     </div>
 
-    <h3 class="sub">Image classification</h3>
-    <p>Top-1 accuracy (%) over 13 teacher–student pairs, mean ± std over 3 seeds. All methods share the optimizer, schedule, augmentation and training budget. <span style="color:var(--accent);font-weight:600">Underlined</span> = best in column.</p>
+    <h3 class="sub">All results</h3>
+    <p>Every table from the paper and the supplementary. Choose a table with the buttons. Values are mean ± std over 3 seeds unless noted; <span style="color:var(--accent);font-weight:600">underlined</span> = best in column.</p>
 
-    <div class="tabs" role="tablist" data-group="cls">
-      <button class="tab" role="tab" aria-selected="true" aria-controls="p-cross" id="t-cross">Cross-architecture (P6–P10)</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="p-same" id="t-same">Same-family (P1–P5)</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="p-beyond" id="t-beyond">ImageNet-100 &amp; TinyImageNet (P11–P13)</button>
+    <div class="tabs" role="tablist" data-group="res">
+      <button class="tab" role="tab" aria-selected="true" aria-controls="p-cross" id="t-cross">Cross-architecture</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-same" id="t-same">Same-family</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-beyond" id="t-beyond">ImageNet-100 &amp; TinyImageNet</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-mce" id="t-mce">CIFAR-100-C robustness</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-shortcut" id="t-shortcut">Shortcut benchmarks</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-ade" id="t-ade">ADE20K segmentation</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-mech" id="t-mech">Mechanistic diagnostics</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-abl" id="t-abl">Ablations</button>
     </div>
 
     <div class="panel" id="p-cross" role="tabpanel" aria-labelledby="t-cross">
@@ -395,9 +400,9 @@ footer p+p{margin-top:6px}
       <p class="tnote">The temporal shortcut signal still helps at higher resolution and with more classes: ASD is best on all three pairs. On TinyImageNet it beats CRD on 3 of 3 paired seeds (+0.62, +1.14, +1.18&nbsp;pp).</p>
     </div>
 
-    <h3 class="sub">Corruption robustness on CIFAR-100-C</h3>
-    <p>Mean Corruption Error (mCE, %, <b>lower is better</b>) across all 15 corruption types at severity 5.</p>
-    <div class="table-wrap"><table>
+    <div class="panel" id="p-mce" role="tabpanel" aria-labelledby="t-mce" hidden>
+      <p class="tnote" style="margin:0 0 10px">Mean Corruption Error (mCE, %, <b>lower is better</b>) on CIFAR-100-C, all 15 corruption types at severity 5.</p>
+      <div class="table-wrap"><table>
       <thead><tr><th>Teacher<br>Student</th>
         <th>ResNet-34<span class="pair">ResNet-18</span></th>
         <th>WRN-40-2<span class="pair">WRN-16-2</span></th>
@@ -416,11 +421,25 @@ footer p+p{margin-top:6px}
         <tr class="ours"><td>ASD (ours)</td><td>85.6<span class="sd">±0.4</span></td><td>94.2<span class="sd">±0.4</span></td><td>97.9<span class="sd">±0.2</span></td><td class="best">91.7<span class="sd">±0.4</span></td><td class="best">85.2<span class="sd">±0.3</span></td><td class="best">86.1<span class="sd">±0.4</span></td></tr>
       </tbody>
     </table></div>
-    <p class="tnote">ASD has the lowest mCE on WRN-40-2&rarr;WRN-40-1, VGG-13&rarr;VGG-8 and the hardest cross-architecture pair, WRN-40-2&rarr;ShuffleNet-V2. CkptKD uses the same early checkpoint as an <em>attractive</em> teacher and loses robustness on five of six pairs. ASD uses it in the opposite direction.</p>
+      <p class="tnote">ASD has the lowest mCE on WRN-40-2&rarr;WRN-40-1, VGG-13&rarr;VGG-8 and the hardest cross-architecture pair, WRN-40-2&rarr;ShuffleNet-V2. CkptKD uses the same early checkpoint as an <em>attractive</em> teacher and degrades robustness on five of six pairs.</p>
+    </div>
 
-    <h3 class="sub">Semantic segmentation on ADE20K</h3>
-    <p>Both ASD losses act on penultimate features, so they extend to dense prediction unchanged. They are applied to the DeepLabv3 backbone feature map, with each spatial location treated as a sample. Setup: ResNet-101 teacher, 512×512 inputs, 40k iterations.</p>
-    <div class="table-wrap"><table>
+    <div class="panel" id="p-shortcut" role="tabpanel" aria-labelledby="t-shortcut" hidden>
+      <p class="tnote" style="margin:0 0 10px">Targeted shortcut benchmarks (supplementary). The trained ImageNet-100 ResNet-50&rarr;MobileNet-V2 students are evaluated without retraining; top-1 (%).</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Method</th><th>ImageNet-R<span class="pair">19 overlapping classes</span></th><th>Stylized-ImageNet-100<span class="pair">full val set</span></th><th>ImageNet-A<span class="pair">15 classes, at chance</span></th></tr></thead>
+        <tbody>
+          <tr class="ref"><td>CE only</td><td>32.36<span class="sd">±0.69</span></td><td>14.89<span class="sd">±0.24</span></td><td>4.95<span class="sd">±0.25</span></td></tr>
+          <tr><td>KD</td><td>36.32<span class="sd">±0.81</span></td><td>18.69<span class="sd">±0.64</span></td><td>6.08<span class="sd">±0.73</span></td></tr>
+          <tr class="ours"><td>ASD (ours)</td><td class="best">37.50<span class="sd">±0.76</span></td><td class="best">19.53<span class="sd">±0.85</span></td><td>5.39<span class="sd">±0.49</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="tnote">ASD beats KD on ImageNet-R on all three seeds and on Stylized-ImageNet-100 by +0.84 on the mean. On ImageNet-A all methods sit near the 6.7% chance level of the 15-way overlap, so the differences there are not significant.</p>
+    </div>
+
+    <div class="panel" id="p-ade" role="tabpanel" aria-labelledby="t-ade" hidden>
+      <p class="tnote" style="margin:0 0 10px">DeepLabv3 on ADE20K, ResNet-101 teacher, 512×512 inputs, 40k iterations. Both ASD losses are applied to the backbone feature map, with each spatial location treated as a sample.</p>
+      <div class="table-wrap"><table>
       <thead>
         <tr><th rowspan="2">Teacher &rarr; Student</th><th colspan="2">From scratch</th><th colspan="2">KD</th><th colspan="2">Af-DCD</th><th>UFD-KD</th><th colspan="2">ASD (ours)</th></tr>
         <tr><th>T. mIoU</th><th>S. mIoU</th><th>pixAcc</th><th>mIoU</th><th>pixAcc</th><th>mIoU</th><th>mIoU</th><th>pixAcc</th><th>mIoU</th></tr>
@@ -430,7 +449,96 @@ footer p+p{margin-top:6px}
         <tr><td>ResNet-101 &rarr; MobileNetV2</td><td>42.70</td><td>34.32</td><td>76.74</td><td>34.92</td><td>77.28</td><td>35.97</td><td>36.24</td><td style="background:var(--accent-soft)">78.65</td><td class="best" style="background:var(--accent-soft)">37.91</td></tr>
       </tbody>
     </table></div>
-    <p class="tnote">ASD reaches 38.87 mIoU with a ResNet-18 student (+1.98 over UFD-KD, +3.99 over from scratch) and 37.91 mIoU with MobileNetV2 (+1.67 over UFD-KD).</p>
+      <p class="tnote">ASD reaches 38.87 mIoU with a ResNet-18 student (+1.98 over UFD-KD, +3.99 over from scratch) and 37.91 mIoU with MobileNetV2 (+1.67 over UFD-KD).</p>
+    </div>
+
+    <div class="panel" id="p-mech" role="tabpanel" aria-labelledby="t-mech" hidden>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Pair</th><th>Data</th><th>KD alignment<span class="pair">T_final / T_early</span></th><th>ASD alignment<span class="pair">T_final / T_early</span></th><th>Shortcut magnitude ↓</th><th>Shape bias<span class="pair">KD / ASD</span></th></tr></thead>
+        <tbody>
+          <tr><td>P1 ResNet-34&rarr;ResNet-18</td><td>CIFAR-100</td><td>.31 / .33</td><td>.90 / .61</td><td>&minus;15.8%</td><td>47.4 / <b>49.0</b></td></tr>
+          <tr><td>P5 VGG-13&rarr;VGG-8</td><td>CIFAR-100</td><td>.30 / .25</td><td>.75 / .52</td><td>&minus;20.5%</td><td>38.3 / <b>39.0</b></td></tr>
+          <tr><td>P3 ResNet-32×4&rarr;ResNet-8×4</td><td>CIFAR-100</td><td>.38 / .41</td><td>.80 / .73</td><td>&minus;28.3%</td><td>33.1 / <b>34.1</b></td></tr>
+          <tr><td>P12 ResNet-34&rarr;ResNet-18</td><td>TinyImageNet</td><td>.42 / .37</td><td>.52 / .34</td><td>&minus;17.0%</td><td>&mdash;</td></tr>
+        </tbody>
+      </table></div>
+      <p class="tnote">Multi-pair diagnostics (supplementary, post hoc, no retraining). ASD aligns with \(T_{\mathrm{final}}\) over \(T_{\mathrm{early}}\) on every pair and reduces shortcut-subspace magnitude by 16–28%.</p>
+      <div class="table-wrap" style="margin-top:14px"><table>
+        <thead><tr><th>P1 diagnostic</th><th>KD</th><th>ASD (ours)</th></tr></thead>
+        <tbody>
+          <tr><td>Mean signed cosine \(\cos(h_S,\Delta h)\)</td><td>0.003</td><td class="best">&minus;0.361</td></tr>
+          <tr><td>Samples on the shortcut-aligned side (threshold &minus;0.1)</td><td>89.0%</td><td class="best">11.7%</td></tr>
+          <tr><td>Projection onto the robust subspace (mean magnitude)</td><td>0.12</td><td class="best">0.45</td></tr>
+          <tr><td>Stylized input: clean / stylized accuracy (degradation)</td><td>80.2 / 48.1 (&minus;32.11%)</td><td>80.3 / 49.1 (&minus;31.12%)</td></tr>
+        </tbody>
+      </table></div>
+      <p class="tnote">For ASD, 99.9% of samples are closer to \(T_{\mathrm{final}}\) than to \(T_{\mathrm{early}}\) (binary InfoNCE bound 0.601 nats). The shortcut subspace is 65.3&deg; from the \(T_{\mathrm{final}}\)-PCA subspace and 38.6&deg; from the \(T_{\mathrm{early}}\)-PCA subspace.</p>
+      <div class="table-wrap" style="margin-top:14px"><table>
+        <thead><tr><th>Teacher epoch (P1, ResNet-34)</th><th>5</th><th>20</th><th>35 (T_early)</th><th>90</th><th>150</th><th>210</th><th>240</th></tr></thead>
+        <tbody>
+          <tr><td>Shortcut-subspace energy</td><td>.178</td><td>.160</td><td class="best">.253</td><td>.153</td><td>.160</td><td>.129</td><td>.128</td></tr>
+          <tr><td>Robust-subspace energy</td><td>.111</td><td>.112</td><td>.129</td><td>.121</td><td>.117</td><td>.104</td><td>.106</td></tr>
+        </tbody>
+      </table></div>
+      <p class="tnote">Feature-energy trajectory of the P1 teacher (supplementary): shortcut energy peaks at the 15% checkpoint and declines ~49% to convergence, while robust energy stays flat.</p>
+    </div>
+
+    <div class="panel" id="p-abl" role="tabpanel" aria-labelledby="t-abl" hidden>
+      <p class="tnote" style="margin:0 0 10px">All ablations on P1 (ResNet-34&rarr;ResNet-18, CIFAR-100). Each sweep changes one setting and keeps the rest at their defaults.</p>
+      <div class="grid-2">
+        <div class="table-wrap"><table>
+        <thead><tr><th>Method (P1)</th><th>Clean Acc (%) ↑</th><th>mCE (%) ↓</th></tr></thead>
+        <tbody>
+          <tr><td>KD</td><td>80.22<span class="sd">±0.19</span></td><td>86.2<span class="sd">±0.4</span></td></tr>
+          <tr><td>ASD w/o \(\mathcal{L}_{\mathrm{SS}}\)</td><td>80.19<span class="sd">±0.07</span></td><td>85.8<span class="sd">±0.7</span></td></tr>
+          <tr><td>ASD w/o \(\mathcal{L}_{\mathrm{TC}}\)</td><td>80.15<span class="sd">±0.19</span></td><td>85.9<span class="sd">±0.4</span></td></tr>
+          <tr class="ours"><td>ASD (full)</td><td class="best">80.50<span class="sd">±0.07</span></td><td class="best">85.6<span class="sd">±0.4</span></td></tr>
+        </tbody>
+      </table></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>\(T_{\mathrm{early}}\) epoch</th><th>% of training</th><th>Clean Acc (%)</th></tr></thead>
+          <tbody>
+            <tr><td>12</td><td>5%</td><td>80.25</td></tr>
+            <tr><td>24</td><td>10%</td><td>80.26</td></tr>
+            <tr class="ours"><td>36 (default)</td><td>15%</td><td>80.50<span class="sd">±0.07</span></td></tr>
+            <tr><td>48</td><td>20%</td><td>80.16</td></tr>
+            <tr><td>72</td><td>30%</td><td>80.56</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <p class="tnote">Removing either loss lowers clean accuracy below KD; only the full model improves both accuracy and robustness. ASD is insensitive to the exact checkpoint within the early-to-middle part of training.</p>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="table-wrap"><table>
+          <thead><tr><th>Subspace dim. \(K\)</th><th>1</th><th>2</th><th>4 (default)</th><th>8</th></tr></thead>
+          <tbody>
+            <tr><td>Clean Acc (%)</td><td>80.21</td><td>80.39</td><td class="best">80.50</td><td>80.27</td></tr>
+            <tr><td>mCE (%) ↓</td><td>86.0</td><td>85.7</td><td class="best">85.6</td><td>85.9</td></tr>
+          </tbody>
+        </table></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Margin \(\varepsilon\)</th><th>0.05</th><th>0.1 (default)</th><th>0.2</th><th>0.4</th></tr></thead>
+          <tbody>
+            <tr><td>Clean Acc (%)</td><td>80.31</td><td class="best">80.50</td><td>80.38</td><td>80.27</td></tr>
+            <tr><td>mCE (%) ↓</td><td>85.7</td><td class="best">85.6</td><td>86.0</td><td>86.1</td></tr>
+          </tbody>
+        </table></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Memory queue \(M\)</th><th>0</th><th>1024</th><th>4096 (default)</th><th>16384</th></tr></thead>
+          <tbody>
+            <tr><td>Clean Acc (%)</td><td>80.24</td><td>80.41</td><td class="best">80.50</td><td>80.46</td></tr>
+          </tbody>
+        </table></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Warm-up (epochs)</th><th>0</th><th>10</th><th>20 (default)</th><th>40</th></tr></thead>
+          <tbody>
+            <tr><td>Clean Acc (%)</td><td>79.83</td><td>80.34</td><td class="best">80.50</td><td>80.42</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <p class="tnote">Hyperparameter sweeps from the supplementary (mean of 3 seeds).</p>
+    </div>
+
+    <h3 class="sub">Qualitative results on ADE20K</h3>
 
     <div class="qual-nav tabs" role="tablist" data-group="qual" style="margin-top:28px">
       <button class="tab" role="tab" aria-selected="true" aria-controls="q1" id="tq1">1</button>
@@ -450,23 +558,6 @@ footer p+p{margin-top:6px}
       <img src="images/ade20k-tsne.jpg" loading="lazy" width="1400" height="1303" alt="t-SNE of penultimate features for the first 50 ADE20K classes: KD student clusters are scattered, while ASD student clusters closely match the teacher.">
       <figcaption><b>Feature geometry on ADE20K.</b> t-SNE of penultimate features for the first 50 classes. The KD student scatters the teacher's class structure, while the ASD student forms tight, well-separated clusters that closely match the teacher's layout.</figcaption>
     </figure>
-
-    <h3 class="sub">Ablation: both losses matter</h3>
-    <div class="grid-2">
-      <div class="table-wrap"><table>
-        <thead><tr><th>Method (P1)</th><th>Clean Acc (%) ↑</th><th>mCE (%) ↓</th></tr></thead>
-        <tbody>
-          <tr><td>KD</td><td>80.22<span class="sd">±0.19</span></td><td>86.2<span class="sd">±0.4</span></td></tr>
-          <tr><td>ASD w/o \(\mathcal{L}_{\mathrm{SS}}\)</td><td>80.19<span class="sd">±0.07</span></td><td>85.8<span class="sd">±0.7</span></td></tr>
-          <tr><td>ASD w/o \(\mathcal{L}_{\mathrm{TC}}\)</td><td>80.15<span class="sd">±0.19</span></td><td>85.9<span class="sd">±0.4</span></td></tr>
-          <tr class="ours"><td>ASD (full)</td><td class="best">80.50<span class="sd">±0.07</span></td><td class="best">85.6<span class="sd">±0.4</span></td></tr>
-        </tbody>
-      </table></div>
-      <div>
-        <p>On P1 (ResNet-34&rarr;ResNet-18, CIFAR-100), either loss alone improves robustness over KD, but neither alone improves clean accuracy. Only the combination improves both.</p>
-        <p>Replacing the same-sample temporal negative with random in-batch negatives turns \(\mathcal{L}_{\mathrm{TC}}\) into a CRD-style loss. Using \(T_{\mathrm{early}}\) as the negative wins on 4 of 5 pairs, by up to +1.33&nbsp;pp on WRN-40-2&rarr;ShuffleNet-V2.</p>
-      </div>
-    </div>
   </div>
 </section>
 
